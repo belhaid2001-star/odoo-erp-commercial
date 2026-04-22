@@ -1,78 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ============================================================ -->
-    <!-- Règles d'accès enregistrement (Record Rules) — RBAC          -->
-    <!-- ============================================================ -->
+    <data noupdate="0">
 
-    <!-- ──────────────── Agent de Stock : limité à son entrepôt ──── -->
+        <!-- Agent de Stock : acces complet a toutes les operations de stock -->
+        <record id="rule_stock_picking_agent" model="ir.rule">
+            <field name="name">Agent de Stock : acces aux transferts</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('custom_rbac.group_stock_agent'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
 
-    <!--
-        Un Agent de Stock ne peut voir que les opérations de stock
-        rattachées à l'entrepôt de son utilisateur (via stock.warehouse.user_ids).
-        Les mouvements sans entrepôt (entrepôt = False) restent visibles.
-    -->
-    <record id="rule_stock_picking_agent" model="ir.rule">
-        <field name="name">Agent de Stock : transferts de son entrepôt uniquement</field>
-        <field name="model_id" ref="stock.model_stock_picking"/>
-        <field name="domain_force">[
-            '|',
-            ('picking_type_id.warehouse_id', '=', False),
-            ('picking_type_id.warehouse_id.user_ids', 'in', [user.id])
-        ]</field>
-        <field name="groups" eval="[(4, ref('custom_rbac.group_stock_agent'))]"/>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="False"/>
-    </record>
+        <!-- Comptable : interdit de supprimer les ecritures validees -->
+        <record id="rule_account_move_comptable_no_delete" model="ir.rule">
+            <field name="name">Comptable : interdit supprimer ecritures validees</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[('state', '!=', 'posted')]</field>
+            <field name="groups" eval="[(4, ref('custom_rbac.group_accountant_ma'))]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
 
-    <!-- ──────────────── Comptable : pas de suppression définitive ── -->
+        <!-- Commercial : opportunites de son equipe uniquement -->
+        <record id="rule_crm_lead_commercial" model="ir.rule">
+            <field name="name">Commercial : opportunites de son equipe</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="domain_force">[
+                '|',
+                '|',
+                ('user_id', '=', user.id),
+                ('team_id.member_ids', 'in', [user.id]),
+                ('team_id.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('custom_rbac.group_sales_agent'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
 
-    <!--
-        Un Comptable peut lire/écrire/créer des écritures mais
-        ne peut pas supprimer des pièces comptables déjà validées.
-        La suppression est bloquée au niveau group (perm_unlink=0 dans ir.model.access).
-    -->
-    <record id="rule_account_move_comptable_no_delete" model="ir.rule">
-        <field name="name">Comptable : interdit supprimer écritures validées</field>
-        <field name="model_id" ref="account.model_account_move"/>
-        <field name="domain_force">[('state', '!=', 'posted')]</field>
-        <field name="groups" eval="[(4, ref('custom_rbac.group_comptable'))]"/>
-        <field name="perm_read" eval="False"/>
-        <field name="perm_write" eval="False"/>
-        <field name="perm_create" eval="False"/>
-        <field name="perm_unlink" eval="True"/>
-    </record>
-
-    <!-- ──────────────── RH Opérationnel : pas de fiches de paie ─── -->
-
-    <!--
-        Le RH Opérationnel ne peut pas accéder aux fiches de paie (hr.payslip).
-        L'accès est géré au niveau groupe dans ir.model.access.csv
-        (aucune ligne pour hr.payslip pour group_rh_operationnel).
-    -->
-
-    <!-- ──────────────── Commercial : CRM uniquement ──────────────── -->
-
-    <!--
-        Le Commercial ne peut voir que ses propres opportunités CRM
-        ou celles de son équipe de vente.
-    -->
-    <record id="rule_crm_lead_commercial" model="ir.rule">
-        <field name="name">Commercial : opportunités de son équipe uniquement</field>
-        <field name="model_id" ref="crm.model_crm_lead"/>
-        <field name="domain_force">[
-            '|',
-            '|',
-            ('user_id', '=', user.id),
-            ('team_id.member_ids', 'in', [user.id]),
-            ('team_id.user_id', '=', user.id)
-        ]</field>
-        <field name="groups" eval="[(4, ref('custom_rbac.group_commercial'))]"/>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="False"/>
-    </record>
-
+    </data>
 </odoo>
