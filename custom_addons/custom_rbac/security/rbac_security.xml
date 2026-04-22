@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ============================================================ -->
+        <!-- Groupes RBAC — Profils utilisateurs ERP Commercial            -->
+        <!-- ============================================================ -->
+
+        <record id="group_erp_admin" model="res.groups">
+            <field name="name">Administrateur ERP</field>
+            <field name="category_id" ref="base.module_category_administration"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
+        <record id="group_sales_director" model="res.groups">
+            <field name="name">Directeur Commercial</field>
+            <field name="category_id" ref="base.module_category_sales_crm"/>
+        </record>
+
+        <record id="group_sales_agent" model="res.groups">
+            <field name="name">Commercial</field>
+            <field name="category_id" ref="base.module_category_sales_crm"/>
+        </record>
+
+        <record id="group_stock_agent" model="res.groups">
+            <field name="name">Agent de Stock</field>
+            <field name="category_id" ref="base.module_category_inventory_delivery"/>
+        </record>
+
+        <record id="group_accountant_ma" model="res.groups">
+            <field name="name">Comptable Maroc</field>
+            <field name="category_id" ref="base.module_category_accounting"/>
+        </record>
+
+        <record id="group_purchase_manager" model="res.groups">
+            <field name="name">Gestionnaire Achats</field>
+            <field name="category_id" ref="base.module_category_purchase"/>
+        </record>
+
+        <record id="group_hr_operational" model="res.groups">
+            <field name="name">RH Operationnel</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+        </record>
+
+    </data>
+</odoo>
