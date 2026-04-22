@@ -7,7 +7,7 @@
     <!-- ============================================================ -->
     <menuitem
         id="menu_ai_root"
-        name="Mohasib IA"
+        name="Assistant IA"
         sequence="95"
         web_icon="custom_ai,static/description/icon.png"/>
 

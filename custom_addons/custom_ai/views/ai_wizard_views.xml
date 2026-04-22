@@ -6,7 +6,7 @@
         <field name="name">ai.wizard.form</field>
         <field name="model">ai.wizard</field>
         <field name="arch" type="xml">
-            <form string="🏗️ Mohasib — Expert-Comptable IA">
+            <form string="🤖 Assistant IA — ERP Commercial">
 
                 <!-- ══════════ MODE COMMANDE VOCALE ══════════ -->
                 <div class="alert alert-info" role="alert"
@@ -18,7 +18,7 @@
 
                 <group invisible="not use_voice_mode">
                     <field name="voice_transcript" widget="text" nolabel="1"
-                           placeholder="Ex : Appelle Mohamed demain matin à 10h pour discuter de l'offre BTP. Puis envoie-lui un email de suivi dans 3 jours avec le devis."
+                           placeholder="Ex : Appelle Youssef demain matin a 10h pour discuter de l'offre. Puis envoie-lui un email de suivi dans 3 jours avec le devis."
                            style="min-height: 100px;"/>
                 </group>
 
@@ -27,10 +27,10 @@
                     <group string="🎯 Action">
                         <field name="action_type" widget="radio"/>
                         <field name="custom_prompt" widget="text"
-                               placeholder="Décrivez votre demande ici..."
-                               invisible="action_type not in ('custom', 'btp_conseil', 'btp_saisie')"/>
+                               placeholder="Décrivez votre demande en langage naturel..."
+                               invisible="action_type not in ('custom', 'accounting_advice', 'accounting_entry')"/>
                     </group>
-                    <group string="📄 Contexte" invisible="not res_model">
+                    <group string="📄 Contexte (enregistrement source)" invisible="not res_model">
                         <field name="res_model" readonly="1"/>
                         <field name="res_id" readonly="1"/>
                         <field name="module_name" readonly="1"/>
@@ -40,7 +40,7 @@
                 <!-- Toggle mode vocal -->
                 <group>
                     <field name="use_voice_mode" widget="boolean_toggle"
-                           string="🎙️ Mode commande vocale (créer activités)"/>
+                           string="🎙️ Mode commande vocale (créer activités automatiquement)"/>
                 </group>
 
                 <!-- Activités créées (après génération) -->
@@ -50,13 +50,13 @@
                     depuis votre commande vocale.
                 </div>
 
-                <separator string="💡 Résultat IA" invisible="not ai_result"/>
+                <separator string="💡 Résultat — Assistant IA" invisible="not ai_result"/>
                 <field name="ai_result" invisible="not ai_result"
                        class="o_field_html"/>
                 <field name="ai_provider" invisible="1"/>
                 <footer>
                     <button name="action_generate" type="object"
-                            string="🚀 Générer" class="btn-primary"
+                            string="🚀 Analyser" class="btn-primary"
                             invisible="use_voice_mode"/>
                     <button name="action_generate" type="object"
                             string="📌 Créer les activités" class="btn-primary"
@@ -72,7 +72,7 @@
 
     <!-- ==================== AI WIZARD ACTION ==================== -->
     <record id="action_ai_wizard" model="ir.actions.act_window">
-        <field name="name">🏗️ Mohasib — Expert-Comptable IA</field>
+        <field name="name">🤖 Assistant IA — ERP Commercial</field>
         <field name="res_model">ai.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

@@ -9,30 +9,26 @@
               web_icon="custom_documents,static/description/icon.png"
               sequence="25"/>
 
-    <!-- Sous-menu Documents -->
+    <!-- ── Sous-menu : Tous les documents (GED) ── -->
     <menuitem id="menu_document_documents"
-              name="Tous les documents"
+              name="GED — Gestion documentaire"
               parent="menu_document_root"
               sequence="10"/>
 
-    <!-- Action Documents -->
+    <!-- Action Documents (model document.document) -->
     <record id="action_document_document" model="ir.actions.act_window">
-        <field name="name">Documents</field>
+        <field name="name">Documents GED</field>
         <field name="res_model">document.document</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="view_document_document_search"/>
         <field name="context">{'search_default_my_documents': 1}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Créez votre premier document
-            </p>
-            <p>
-                Centralisez tous vos fichiers et documents dans une seule plateforme numérique.
-            </p>
+            <p class="o_view_nocontent_smiling_face">Créez votre premier document</p>
+            <p>Centralisez tous vos fichiers dans une seule plateforme.</p>
         </field>
     </record>
     <menuitem id="menu_document_all"
-              name="Documents"
+              name="Tous les documents GED"
               parent="menu_document_documents"
               action="action_document_document"
               sequence="10"/>
@@ -41,13 +37,119 @@
     <record id="action_document_folder" model="ir.actions.act_window">
         <field name="name">Dossiers</field>
         <field name="res_model">document.folder</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     <menuitem id="menu_document_folders"
               name="Dossiers"
               parent="menu_document_documents"
               action="action_document_folder"
               sequence="20"/>
+
+    <!-- ── Sous-menu : Pièces jointes toutes applis ── -->
+    <menuitem id="menu_document_attachments"
+              name="Pièces jointes (toutes applis)"
+              parent="menu_document_root"
+              sequence="20"/>
+
+    <!-- Action : TOUTES les pièces jointes (ir.attachment) de l'ERP -->
+    <record id="action_all_attachments" model="ir.actions.act_window">
+        <field name="name">Toutes les pièces jointes</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('res_model', '!=', False), ('type', '=', 'binary')]</field>
+        <field name="context">{'search_default_group_model': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucune pièce jointe trouvée</p>
+            <p>Toutes les pièces jointes de l'ensemble des modules apparaissent ici.</p>
+        </field>
+    </record>
+    <menuitem id="menu_all_attachments"
+              name="Toutes les pièces jointes"
+              parent="menu_document_attachments"
+              action="action_all_attachments"
+              sequence="10"/>
+
+    <!-- Action : Pièces jointes par Chantier BTP -->
+    <record id="action_attachments_by_chantier" model="ir.actions.act_window">
+        <field name="name">Documents par Chantier</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('res_model', '=', 'btp.chantier'), ('type', '=', 'binary')]</field>
+        <field name="context">{'search_default_group_res_id': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun document chantier</p>
+            <p>Pièces jointes attachées à chaque chantier BTP.</p>
+        </field>
+    </record>
+    <menuitem id="menu_attachments_chantier"
+              name="Par Chantier BTP"
+              parent="menu_document_attachments"
+              action="action_attachments_by_chantier"
+              sequence="20"/>
+
+    <!-- Action : Pièces jointes par Commande Vente -->
+    <record id="action_attachments_by_sale" model="ir.actions.act_window">
+        <field name="name">Documents par Commande Vente</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('res_model', '=', 'sale.order'), ('type', '=', 'binary')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun document vente</p>
+        </field>
+    </record>
+    <menuitem id="menu_attachments_sale"
+              name="Par Commande Vente"
+              parent="menu_document_attachments"
+              action="action_attachments_by_sale"
+              sequence="30"/>
+
+    <!-- Action : Pièces jointes par Commande Achat -->
+    <record id="action_attachments_by_purchase" model="ir.actions.act_window">
+        <field name="name">Documents par Commande Achat</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('res_model', '=', 'purchase.order'), ('type', '=', 'binary')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun document achat</p>
+        </field>
+    </record>
+    <menuitem id="menu_attachments_purchase"
+              name="Par Commande Achat"
+              parent="menu_document_attachments"
+              action="action_attachments_by_purchase"
+              sequence="40"/>
+
+    <!-- Action : Pièces jointes par Employé RH -->
+    <record id="action_attachments_by_employee" model="ir.actions.act_window">
+        <field name="name">Documents par Employé</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('res_model', '=', 'hr.employee'), ('type', '=', 'binary')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun document employé</p>
+        </field>
+    </record>
+    <menuitem id="menu_attachments_employee"
+              name="Par Employé RH"
+              parent="menu_document_attachments"
+              action="action_attachments_by_employee"
+              sequence="50"/>
+
+    <!-- Action : Pièces jointes par Facture -->
+    <record id="action_attachments_by_invoice" model="ir.actions.act_window">
+        <field name="name">Documents par Facture</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('res_model', '=', 'account.move'), ('type', '=', 'binary')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aucun document comptable</p>
+        </field>
+    </record>
+    <menuitem id="menu_attachments_invoice"
+              name="Par Facture / Écriture"
+              parent="menu_document_attachments"
+              action="action_attachments_by_invoice"
+              sequence="60"/>
 
     <!-- Configuration -->
     <menuitem id="menu_document_config"
@@ -60,7 +162,7 @@
     <record id="action_document_tag" model="ir.actions.act_window">
         <field name="name">Étiquettes</field>
         <field name="res_model">document.tag</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">list</field>
     </record>
     <menuitem id="menu_document_tags"
               name="Étiquettes"

@@ -31,18 +31,16 @@ class AIWizard(models.TransientModel):
 
     # Input
     action_type = fields.Selection([
-        ('generate_description', '📝 Générer une description'),
-        ('analyze', '📊 Analyser les données'),
-        ('suggest_price', '💰 Suggestion de prix/remise'),
-        ('suggest_action', '🎯 Prochaine action recommandée'),
-        ('generate_email', '📧 Générer un email'),
-        ('evaluate', '📋 Synthèse d\'évaluation'),
-        ('predict', '🔮 Prédiction'),
-        ('btp_conseil', '🏗️ Mohasib — Conseil fiscal/comptable'),
-        ('btp_saisie', '📒 Mohasib — Écriture comptable PCM'),
-        ('btp_analyse', '📊 Mohasib — Analyse financière chantier'),
-        ('create_activity', '📌 Créer activités depuis commande vocale'),
-        ('custom', '✏️ Requête personnalisée'),
+        ('analyze',               '📊 Analyser cet enregistrement'),
+        ('suggest_action',        '🎯 Quelle est la prochaine action ?'),
+        ('generate_description',  '📝 Générer une description'),
+        ('suggest_price',         '💰 Suggestion de prix / remise'),
+        ('generate_email',        '📧 Rédiger un email professionnel'),
+        ('evaluate',              '📋 Synthèse d\'évaluation'),
+        ('predict',               '🔮 Prédiction et tendances'),
+        ('accounting_advice',     '💼 Conseil comptable / fiscal (Maroc)'),
+        ('accounting_entry',      '📒 Générer une écriture comptable (PCM)'),
+        ('custom',                '✏️ Requête personnalisée'),
     ], string='Action IA', required=True, default='analyze')
 
     custom_prompt = fields.Text(string='Requête personnalisée',
@@ -70,22 +68,20 @@ class AIWizard(models.TransientModel):
     @api.onchange('use_voice_mode')
     def _onchange_use_voice_mode(self):
         if self.use_voice_mode:
-            self.action_type = 'create_activity'
+            self.action_type = 'analyze'
 
     @api.onchange('action_type')
     def _onchange_action_type(self):
         if self.action_type == 'custom':
             self.custom_prompt = ''
-        elif self.action_type in ('btp_conseil', 'btp_saisie'):
+        elif self.action_type in ('accounting_advice', 'accounting_entry'):
             self.custom_prompt = ''
-        elif self.action_type == 'create_activity':
-            self.use_voice_mode = True
 
     def action_generate(self):
         """Execute the AI action and display results."""
         self.ensure_one()
 
-        if self.action_type == 'create_activity':
+        if self.use_voice_mode:
             return self._action_create_activities_from_voice()
 
         mixin = self.env['ai.mixin']
@@ -94,23 +90,23 @@ class AIWizard(models.TransientModel):
         ctx = self._get_record_context()
 
         # Build prompt based on action type
+        name = ctx.get('name', ctx.get('display_name', ''))
         prompts = {
-            'generate_description': f"Génère une description commerciale pour : {ctx.get('name', '')}",
-            'analyze': f"Analyse complète de cet enregistrement",
-            'suggest_price': f"Suggestion de prix et remise pour cette commande",
-            'suggest_action': f"Quelle est la prochaine action recommandée ?",
-            'generate_email': f"Génère un email de relance professionnel",
-            'evaluate': f"Génère une synthèse d'évaluation",
-            'predict': f"Fais une prédiction basée sur les données disponibles",
-            'btp_conseil': self.custom_prompt or "Comment fonctionne la TVA BTP au Maroc ?",
-            'btp_saisie': self.custom_prompt or "Comptabilise la situation de travaux",
-            'btp_analyse': f"Analyse financière complète du chantier {ctx.get('name', '')}",
-            'custom': self.custom_prompt or "Analyse cette situation",
+            'generate_description': f"Génère une description commerciale professionnelle pour : {name}",
+            'analyze':              "Analyse complète et détaillée de cet enregistrement avec recommandations concrètes",
+            'suggest_price':        "Suggestion de prix, remise et conditions de paiement optimales",
+            'suggest_action':       "Quelle est la prochaine action recommandée ? Donne des étapes concrètes et priorités.",
+            'generate_email':       "Rédige un email professionnel en français adapté au contexte de cet enregistrement",
+            'evaluate':             "Génère une synthèse d'évaluation avec points forts, axes d'amélioration et note",
+            'predict':              "Fais une prédiction basée sur les données disponibles avec niveau de confiance",
+            'accounting_advice':    self.custom_prompt or "Conseil comptable et fiscal selon la réglementation marocaine (PCM, TVA, IS, IR)",
+            'accounting_entry':     self.custom_prompt or "Génère l'écriture comptable selon le Plan Comptable Marocain (PCM)",
+            'custom':               self.custom_prompt or f"Analyse cette situation : {name}",
         }
-        prompt = prompts.get(self.action_type, self.custom_prompt)
-        # Force module to 'btp' for Mohasib action types
-        if self.action_type in ('btp_conseil', 'btp_saisie', 'btp_analyse'):
-            module = 'btp'
+        prompt = prompts.get(self.action_type, self.custom_prompt or 'Analyse.')
+        # Force module to 'accounting' for accounting action types
+        if self.action_type in ('accounting_advice', 'accounting_entry'):
+            module = 'accounting'
         else:
             module = self.module_name or 'general'
 
@@ -132,7 +128,7 @@ class AIWizard(models.TransientModel):
             'res_id': self.id,
             'view_mode': 'form',
             'target': 'new',
-            'name': '🤖 Résultat IA',
+            'name': '🤖 Résultat — Assistant IA',
         }
 
     def _action_create_activities_from_voice(self):

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =========================================================
+         Smart buttons "Documents GED" injectés dans les modules tiers
+    ========================================================== -->
+
+    <!-- ── Commande Vente ── -->
+    <record id="view_sale_order_ged_button" model="ir.ui.view">
+        <field name="name">sale.order.ged.button</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_ged_documents" type="object"
+                        class="oe_stat_button" icon="fa-folder-open">
+                    <field name="ged_document_count" string="Documents" widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tab Documents dans la commande vente -->
+    <record id="view_sale_order_ged_tab" model="ir.ui.view">
+        <field name="name">sale.order.ged.tab</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="📎 Documents GED" name="ged_documents">
+                    <div class="alert alert-light" role="alert" style="margin-bottom:8px;">
+                        <i class="fa fa-folder-open"/> Documents liés à cette commande. Créez-en directement depuis ici ou depuis le module <strong>Documents</strong>.
+                    </div>
+                    <field name="ged_document_ids" nolabel="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="document_type"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'validated'"
+                                   decoration-info="state == 'draft'"/>
+                            <field name="responsible_id" widget="many2one_avatar_user"/>
+                            <field name="expiration_date"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ── Commande Achat ── -->
+    <record id="view_purchase_order_ged_button" model="ir.ui.view">
+        <field name="name">purchase.order.ged.button</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_ged_documents" type="object"
+                        class="oe_stat_button" icon="fa-folder-open">
+                    <field name="ged_document_count" string="Documents" widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tab Documents dans la commande achat -->
+    <record id="view_purchase_order_ged_tab" model="ir.ui.view">
+        <field name="name">purchase.order.ged.tab</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="📎 Documents GED" name="ged_documents">
+                    <div class="alert alert-light" role="alert" style="margin-bottom:8px;">
+                        <i class="fa fa-folder-open"/> Documents liés à cette commande fournisseur.
+                    </div>
+                    <field name="ged_document_ids" nolabel="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="document_type"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'validated'"
+                                   decoration-info="state == 'draft'"/>
+                            <field name="responsible_id" widget="many2one_avatar_user"/>
+                            <field name="expiration_date"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ── Facture / Écriture comptable ── -->
+    <record id="view_account_move_ged_button" model="ir.ui.view">
+        <field name="name">account.move.ged.button</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_ged_documents" type="object"
+                        class="oe_stat_button" icon="fa-folder-open"
+                        invisible="ged_document_count == 0">
+                    <field name="ged_document_count" string="Documents GED" widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ── Employé RH ── -->
+    <record id="view_hr_employee_ged_button" model="ir.ui.view">
+        <field name="name">hr.employee.ged.button</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_ged_documents" type="object"
+                        class="oe_stat_button" icon="fa-folder-open">
+                    <field name="ged_document_count" string="Documents" widget="statinfo"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tab Documents dans la fiche employé -->
+    <record id="view_hr_employee_ged_tab" model="ir.ui.view">
+        <field name="name">hr.employee.ged.tab</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="📎 Documents RH" name="ged_documents">
+                    <div class="alert alert-light" role="alert" style="margin-bottom:8px;">
+                        <i class="fa fa-folder-open"/> Dossier documentaire de cet employé : contrats, attestations, certificats, etc.
+                    </div>
+                    <field name="ged_document_ids" nolabel="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="document_type"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'validated'"
+                                   decoration-info="state == 'draft'"
+                                   decoration-danger="is_expired"/>
+                            <field name="expiration_date"/>
+                            <field name="responsible_id" widget="many2one_avatar_user"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
