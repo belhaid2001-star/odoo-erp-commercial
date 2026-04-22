@@ -107,14 +107,7 @@ class BtpChantier(models.Model):
     meteo_ids = fields.One2many('btp.meteo', 'chantier_id', string='Météo')
     approvisionnement_ids = fields.One2many('btp.approvisionnement', 'chantier_id', string='Approvisionnements')
 
-    # ──────────────── GED : lien vers Documents centralisés ────────────────
-    ged_document_ids = fields.Many2many(
-        'document.document',
-        'btp_chantier_document_rel',
-        'chantier_id',
-        'document_id',
-        string='Documents GED',
-    )
+    # ──────────────── GED : pièces jointes du chantier ────────────────
     ged_document_count = fields.Integer(compute='_compute_ged_document_count', string='Documents GED')
 
     # ──────────────── Consommation globale lots ────────────────
@@ -205,8 +198,12 @@ class BtpChantier(models.Model):
             rec.engin_count = len(rec.engin_ids)
 
     def _compute_ged_document_count(self):
+        AttModel = self.env['ir.attachment']
         for rec in self:
-            rec.ged_document_count = len(rec.ged_document_ids)
+            rec.ged_document_count = AttModel.search_count([
+                ('res_model', '=', 'btp.chantier'),
+                ('res_id', '=', rec.id),
+            ])
 
     @api.depends('lot_ids', 'lot_ids.budget_prevu', 'lot_ids.cout_reel')
     def _compute_taux_consommation_global(self):
@@ -362,17 +359,17 @@ class BtpChantier(models.Model):
         }
 
     def action_view_ged_documents(self):
-        """Ouvrir les documents GED liés à ce chantier."""
+        """Ouvrir les pièces jointes du chantier."""
         self.ensure_one()
         return {
-            'name': 'Documents GED — ' + self.name,
+            'name': 'Documents — ' + self.name,
             'type': 'ir.actions.act_window',
-            'res_model': 'document.document',
-            'view_mode': 'kanban,tree,form',
-            'domain': [('id', 'in', self.ged_document_ids.ids)],
+            'res_model': 'ir.attachment',
+            'view_mode': 'list,form',
+            'domain': [('res_model', '=', 'btp.chantier'), ('res_id', '=', self.id)],
             'context': {
-                'default_chantier_id': self.id,
-                'default_folder_id': False,
+                'default_res_model': 'btp.chantier',
+                'default_res_id': self.id,
             },
         }
 

@@ -171,14 +171,10 @@
                         <page string="GED — Documents centralisés" name="ged">
                             <div class="alert alert-success" role="alert">
                                 <strong>📁 Gestion Électronique des Documents :</strong>
-                                Sélectionnez ici les documents GED existants à affecter à ce chantier,
-                                ou créez-en via le module Documents. Évitez de re-télécharger les fichiers
-                                déjà présents dans la plateforme.
+                                Les pièces jointes du chantier sont accessibles via le bouton Documents ci-dessus.
+                                Vous pouvez aussi les gérer depuis le module Documents.
                             </div>
-                            <field name="ged_document_ids" widget="many2many_tags"
-                                   domain="[]"
-                                   context="{'default_chantier_id': id}">
-                            </field>
+                            <field name="ged_document_count" readonly="1"/>
                         </page>
                         <page string="Documents" name="documents">
                             <field name="document_ids">
