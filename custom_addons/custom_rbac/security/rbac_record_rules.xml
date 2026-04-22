@@ -19,7 +19,7 @@
             <field name="name">Comptable : interdit supprimer ecritures validees</field>
             <field name="model_id" ref="account.model_account_move"/>
             <field name="domain_force">[('state', '!=', 'posted')]</field>
-            <field name="groups" eval="[(4, ref('custom_rbac.group_accountant_ma'))]"/>
+            <field name="groups" eval="[(4, ref('custom_rbac.group_comptable'))]"/>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
@@ -37,7 +37,7 @@
                 ('team_id.member_ids', 'in', [user.id]),
                 ('team_id.user_id', '=', user.id)
             ]</field>
-            <field name="groups" eval="[(4, ref('custom_rbac.group_sales_agent'))]"/>
+            <field name="groups" eval="[(4, ref('custom_rbac.group_commercial'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
