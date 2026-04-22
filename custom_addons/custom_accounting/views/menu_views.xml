@@ -90,6 +90,43 @@
               action="action_account_aged_balance"
               sequence="40"/>
 
+    <!-- ==================== INVENTAIRE & STOCK ==================== -->
+    <menuitem id="menu_account_stock_root"
+              name="📦 Inventaire &amp; Stock"
+              parent="account.menu_finance"
+              sequence="8"/>
+
+    <menuitem id="menu_account_stock_valuation"
+              name="Valorisation du stock"
+              parent="menu_account_stock_root"
+              action="custom_accounting.action_stock_valuation_accounting"
+              sequence="10"/>
+
+    <menuitem id="menu_account_stock_moves"
+              name="Mouvements valorisés"
+              parent="menu_account_stock_root"
+              action="custom_accounting.action_stock_move_accounting"
+              sequence="20"/>
+
+    <menuitem id="menu_account_stock_entries"
+              name="Écritures comptables stock"
+              parent="menu_account_stock_root"
+              action="custom_accounting.action_account_move_stock"
+              sequence="30"/>
+
+    <menuitem id="menu_account_stock_inventory"
+              name="Inventaire physique"
+              parent="menu_account_stock_root"
+              action="custom_accounting.action_stock_inventory_accounting"
+              sequence="40"/>
+
+    <menuitem id="menu_account_stock_categ"
+              name="Catégories produits — Coûts"
+              parent="menu_account_stock_root"
+              action="custom_accounting.action_product_category_costing"
+              sequence="50"
+              groups="account.group_account_manager"/>
+
     <!-- ==================== CONFIGURATION COMPTA ==================== -->
     <menuitem id="menu_account_config_custom"
               name="⚙️ Configuration"

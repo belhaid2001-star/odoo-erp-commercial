@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- INVENTAIRE & STOCK — vues intégrées dans le module Comptabilité -->
+    <!-- Utilise stock_account (natif Odoo) pour lier les mouvements     -->
+    <!-- de stock aux écritures comptables.                              -->
+    <!-- ============================================================ -->
+
+    <!-- ==================== VALORISATION DU STOCK ==================== -->
+    <record id="action_stock_valuation_accounting" model="ir.actions.act_window">
+        <field name="name">Valorisation du stock</field>
+        <field name="res_model">stock.valuation.layer</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_by_product': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune valorisation de stock trouvée.
+            </p>
+            <p>
+                Les valorisations apparaissent automatiquement lorsque des
+                mouvements de stock validés génèrent des écritures comptables.
+            </p>
+        </field>
+    </record>
+
+    <!-- ==================== MOUVEMENTS DE STOCK (avec écritures) ==================== -->
+    <record id="action_stock_move_accounting" model="ir.actions.act_window">
+        <field name="name">Mouvements de stock valorisés</field>
+        <field name="res_model">stock.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'done'), ('product_id.categ_id.property_cost_method', '!=', 'standard')]</field>
+        <field name="context">{'search_default_group_by_product_categ': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun mouvement valorisé trouvé.
+            </p>
+            <p>
+                Les mouvements de stock validés dont les produits ont une
+                méthode de coût (FIFO / Coût moyen) apparaissent ici.
+            </p>
+        </field>
+    </record>
+
+    <!-- ==================== CATÉGORIES DE PRODUITS (coût) ==================== -->
+    <record id="action_product_category_costing" model="ir.actions.act_window">
+        <field name="name">Catégories de produits — Coûts</field>
+        <field name="res_model">product.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configurez la méthode de valorisation des produits.
+            </p>
+            <p>
+                Choisissez entre <b>Prix standard</b>, <b>Coût moyen (AVCO)</b>
+                ou <b>Premier entré / Premier sorti (FIFO)</b>.
+                Chaque méthode génère des écritures comptables différentes.
+            </p>
+        </field>
+    </record>
+
+    <!-- ==================== INVENTAIRE PHYSIQUE (ajustements) ==================== -->
+    <record id="action_stock_inventory_accounting" model="ir.actions.act_window">
+        <field name="name">Inventaire physique</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_locationgroup': 1, 'default_is_outdated': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun stock trouvé.
+            </p>
+            <p>
+                L'inventaire physique vous permet d'ajuster les quantités réelles.
+                Chaque ajustement génère automatiquement une écriture de perte ou profit de stock.
+            </p>
+        </field>
+    </record>
+
+    <!-- ==================== RAPPORT DE VALORISATION (journal entries from stock) ==================== -->
+    <record id="action_account_move_stock" model="ir.actions.act_window">
+        <field name="name">Écritures comptables — Stock</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('stock_move_id', '!=', False)]</field>
+        <field name="context">{'search_default_group_journal': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune écriture stock trouvée.
+            </p>
+            <p>
+                Toutes les écritures comptables générées automatiquement
+                par les mouvements de stock validés apparaissent ici.
+            </p>
+        </field>
+    </record>
+
+</odoo>

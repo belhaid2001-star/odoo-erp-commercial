@@ -33,6 +33,7 @@
         'views/account_payment_tracking_views.xml',
         'views/account_tax_report_views.xml',
         'views/account_aged_balance_views.xml',
+        'views/account_stock_views.xml',
         'data/account_data.xml',
         'report/account_report_templates.xml',
         'report/account_report_custom.xml',
