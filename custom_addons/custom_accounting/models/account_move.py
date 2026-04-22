@@ -66,6 +66,35 @@ class AccountMove(models.Model):
         string='Chèques',
     )
 
+    # ──────────────── Liaison Stock & Inventaire ────────────────
+    picking_ids = fields.Many2many(
+        'stock.picking',
+        'account_move_stock_picking_rel',
+        'move_id',
+        'picking_id',
+        string='Bons de livraison / Réceptions',
+        help="Opérations de stock liées à cette pièce comptable.",
+    )
+    picking_count = fields.Integer(
+        string='Nb mouvements stock',
+        compute='_compute_picking_count',
+    )
+
+    def _compute_picking_count(self):
+        for move in self:
+            move.picking_count = len(move.picking_ids)
+
+    def action_view_pickings(self):
+        """Ouvrir les mouvements de stock liés."""
+        self.ensure_one()
+        return {
+            'name': 'Mouvements de stock',
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.picking',
+            'view_mode': 'tree,form',
+            'domain': [('id', 'in', self.picking_ids.ids)],
+        }
+
     # --- Calculs ---
     @api.depends('invoice_date_due', 'payment_state')
     def _compute_days_overdue(self):

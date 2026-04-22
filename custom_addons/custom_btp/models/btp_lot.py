@@ -29,6 +29,7 @@ class BtpLot(models.Model):
 
     # ──────────────── Relations ────────────────
     tache_ids = fields.One2many('btp.tache', 'lot_id', string='Tâches')
+    meteo_ids = fields.One2many('btp.meteo', 'lot_id', string='Suivi météo')
     situation_line_ids = fields.One2many('btp.situation.line', 'lot_id', string='Lignes de situation')
 
     # ──────────────── Calculs ────────────────

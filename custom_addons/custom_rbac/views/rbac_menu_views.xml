@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- Menu RBAC — visible uniquement par les Administrateurs ERP   -->
+    <!-- ============================================================ -->
+
+    <!-- Lien rapide dans Paramètres → Utilisateurs (natif Odoo) -->
+    <!-- Les groupes sont accessibles via :                       -->
+    <!-- Paramètres → Utilisateurs et Compagnies → Groupes       -->
+
+    <!-- Page d'aide contextuelle dans la section Paramètres -->
+    <record id="action_rbac_groups_overview" model="ir.actions.act_window">
+        <field name="name">Profils et Groupes d'accès</field>
+        <field name="res_model">res.groups</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('category_id.name', '=', 'ERP Commercial — Accès et Sécurité')]</field>
+        <field name="context">{'search_default_category_id': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Gérez les profils d'accès de votre ERP Commercial
+            </p>
+            <p>
+                Les groupes suivants sont disponibles :
+                <ul>
+                    <li><strong>Administrateur ERP</strong> — Accès complet à toute la plateforme</li>
+                    <li><strong>Directeur Commercial</strong> — CRM, Ventes, Facturation (lecture)</li>
+                    <li><strong>Commercial</strong> — CRM et Ventes uniquement</li>
+                    <li><strong>Agent de Stock</strong> — Stock limité à son entrepôt</li>
+                    <li><strong>Comptable Maroc</strong> — Comptabilité sans suppression définitive</li>
+                    <li><strong>Gestionnaire Achats</strong> — Module Achats complet</li>
+                    <li><strong>RH Opérationnel</strong> — Personnel et congés, sans paie</li>
+                </ul>
+                Assignez les groupes via <b>Paramètres → Utilisateurs → [utilisateur] → onglet Accès</b>.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_rbac_root"
+              name="Accès et Profils"
+              parent="base.menu_administration"
+              action="action_rbac_groups_overview"
+              groups="base.group_system"
+              sequence="99"/>
+
+</odoo>

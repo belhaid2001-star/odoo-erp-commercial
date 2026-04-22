@@ -129,6 +129,38 @@ class DocumentDocument(models.Model):
         default=lambda self: self.env.company,
     )
 
+    # ──────────────── Liaisons cross-modules (GED centralisée) ────────────────
+    chantier_id = fields.Many2one(
+        'btp.chantier',
+        string='Chantier BTP',
+        ondelete='set null',
+        help="Affecter ce document à un chantier BTP.",
+    )
+    sale_id = fields.Many2one(
+        'sale.order',
+        string='Bon de commande vente',
+        ondelete='set null',
+        help="Affecter ce document à un devis/bon de commande client.",
+    )
+    purchase_id = fields.Many2one(
+        'purchase.order',
+        string='Commande fournisseur',
+        ondelete='set null',
+        help="Affecter ce document à une commande fournisseur.",
+    )
+    invoice_id = fields.Many2one(
+        'account.move',
+        string='Facture / Écriture comptable',
+        ondelete='set null',
+        help="Affecter ce document à une facture ou écriture comptable.",
+    )
+    employee_id = fields.Many2one(
+        'hr.employee',
+        string='Employé',
+        ondelete='set null',
+        help="Affecter ce document au dossier RH d'un employé.",
+    )
+
     # --- Calculs ---
     def _compute_file_size(self):
         for doc in self:

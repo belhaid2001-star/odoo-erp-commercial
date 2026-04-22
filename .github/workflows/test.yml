@@ -68,7 +68,7 @@ jobs:
             --db_user=$POSTGRES_USER \
             --db_password=$POSTGRES_PASSWORD \
             --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons \
-            -i custom_sale,custom_purchase,custom_stock,custom_accounting,custom_hr,custom_crm,custom_calendar,custom_documents,custom_discuss,custom_contacts,custom_dashboard,custom_ai \
+            -i custom_sale,custom_purchase,custom_stock,custom_accounting,custom_hr,custom_crm,custom_calendar,custom_documents,custom_discuss,custom_contacts,custom_dashboard,custom_ai,custom_btp \
             --stop-after-init \
             --without-demo=False
 
@@ -216,6 +216,18 @@ jobs:
             --stop-after-init \
             --log-level=test
 
+      - name: Exécuter les tests — custom_btp
+        run: |
+          odoo -d $ODOO_DB \
+            --db_host=postgres \
+            --db_user=$POSTGRES_USER \
+            --db_password=$POSTGRES_PASSWORD \
+            --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons \
+            --test-enable \
+            --test-tags=/custom_btp \
+            --stop-after-init \
+            --log-level=test
+
   # ─── Job 2 : Tests E2E Playwright ────────────────────────────────
   playwright-tests:
     name: Tests E2E Playwright
@@ -229,7 +241,7 @@ jobs:
 
       - name: Démarrer l'environnement Docker
         run: |
-          docker compose up -d
+          docker compose up -d --wait
           echo "Attente du démarrage d'Odoo (60s)..."
           sleep 60
           # Vérifier qu'Odoo répond
@@ -248,7 +260,7 @@ jobs:
             --db_host=db \
             --db_user=$POSTGRES_USER \
             --db_password=$POSTGRES_PASSWORD \
-            -i custom_sale,custom_purchase,custom_stock,custom_accounting,custom_hr,custom_crm,custom_calendar,custom_documents,custom_discuss,custom_contacts,custom_dashboard,custom_ai \
+            -i custom_sale,custom_purchase,custom_stock,custom_accounting,custom_hr,custom_crm,custom_calendar,custom_documents,custom_discuss,custom_contacts,custom_dashboard,custom_ai,custom_btp \
             --stop-after-init \
             --without-demo=False
           docker compose restart odoo

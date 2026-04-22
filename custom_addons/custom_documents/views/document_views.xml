@@ -152,6 +152,22 @@
                                options="{'color_field': 'color'}"
                                help="Étiquettes pour organiser et retrouver les documents"/>
                     </group>
+                    <group string="🔗 Affecter à un dossier projet (sans re-télécharger)">
+                        <group>
+                            <field name="chantier_id"
+                                   help="Affecter ce document à un chantier BTP"/>
+                            <field name="sale_id"
+                                   help="Affecter ce document à un devis/commande client"/>
+                            <field name="purchase_id"
+                                   help="Affecter ce document à une commande fournisseur"/>
+                        </group>
+                        <group>
+                            <field name="invoice_id"
+                                   help="Affecter ce document à une facture"/>
+                            <field name="employee_id"
+                                   help="Affecter ce document au dossier RH d'un employé"/>
+                        </group>
+                    </group>
                     <notebook>
                         <page string="&#128221; Notes" name="notes">
                             <field name="notes" placeholder="Contexte, références, instructions particulières..."
@@ -224,6 +240,8 @@
                 <field name="partner_id"/>
                 <field name="responsible_id"/>
                 <field name="document_type"/>
+                <field name="chantier_id"/>
+                <field name="employee_id"/>
                 <separator/>
                 <filter string="Brouillon" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Validé" name="validated" domain="[('state', '=', 'validated')]"/>
@@ -237,11 +255,16 @@
                 <separator/>
                 <filter string="Mes documents" name="my_documents"
                         domain="[('responsible_id', '=', uid)]"/>
+                <filter string="Documents BTP" name="btp_docs"
+                        domain="[('chantier_id', '!=', False)]"/>
+                <filter string="Documents RH" name="hr_docs"
+                        domain="[('employee_id', '!=', False)]"/>
                 <separator/>
                 <group expand="0" string="Grouper par">
                     <filter string="Dossier" name="group_folder" context="{'group_by': 'folder_id'}"/>
                     <filter string="Type" name="group_type" context="{'group_by': 'document_type'}"/>
                     <filter string="État" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Chantier" name="group_chantier" context="{'group_by': 'chantier_id'}"/>
                     <filter string="Responsable" name="group_responsible" context="{'group_by': 'responsible_id'}"/>
                 </group>
             </search>

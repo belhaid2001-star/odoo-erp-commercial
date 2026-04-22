@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'BTP Chantiers - Gestion Complète des Chantiers BTP Maroc',
-    'version': '17.0.1.0.0',
+    'version': '17.0.2.0.0',
     'category': 'Project',
     'summary': 'Gestion complète des chantiers BTP au Maroc : lots, tâches, pointage, engins, situations, sous-traitants, CNSS',
     'description': """
@@ -61,10 +61,12 @@ Module complet de gestion de chantiers BTP adapté au contexte marocain :
         'base',
         'project',
         'hr',
+        'hr_contract',
         'purchase',
+        'stock',
         'account',
-        'maintenance',
         'mail',
+        'custom_hr',
     ],
     'data': [
         # Sécurité

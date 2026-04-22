@@ -11,6 +11,50 @@
             <field name="name">Négociation</field>
             <field name="sequence">25</field>
         </record>
+
+        <!-- ============================================================ -->
+        <!-- Type d'activité : WhatsApp                                    -->
+        <!-- ============================================================ -->
+        <record id="mail_activity_type_whatsapp" model="mail.activity.type">
+            <field name="name">WhatsApp</field>
+            <field name="icon">fa-whatsapp</field>
+            <field name="delay_count">0</field>
+            <field name="delay_unit">days</field>
+            <field name="res_model"/>
+            <field name="sequence">5</field>
+            <field name="category">default</field>
+        </record>
+
+        <!-- Type d'activité : Appel téléphonique (précis) -->
+        <record id="mail_activity_type_appel" model="mail.activity.type">
+            <field name="name">Appel téléphonique</field>
+            <field name="icon">fa-phone</field>
+            <field name="delay_count">0</field>
+            <field name="delay_unit">days</field>
+            <field name="res_model"/>
+            <field name="sequence">6</field>
+        </record>
+
+        <!-- Type d'activité : Email de relance -->
+        <record id="mail_activity_type_relance_email" model="mail.activity.type">
+            <field name="name">Email de relance</field>
+            <field name="icon">fa-envelope</field>
+            <field name="delay_count">3</field>
+            <field name="delay_unit">days</field>
+            <field name="res_model"/>
+            <field name="sequence">7</field>
+        </record>
+
+        <!-- Type d'activité : Démonstration produit -->
+        <record id="mail_activity_type_demo" model="mail.activity.type">
+            <field name="name">Démonstration / Présentation</field>
+            <field name="icon">fa-desktop</field>
+            <field name="delay_count">7</field>
+            <field name="delay_unit">days</field>
+            <field name="res_model"/>
+            <field name="sequence">8</field>
+        </record>
+
     </data>
 
     <!-- Action concurrents -->

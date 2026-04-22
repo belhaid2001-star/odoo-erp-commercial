@@ -19,6 +19,7 @@ class TestCrmLeadCustom(TransactionCase):
         cls.partner = cls.env['res.partner'].create({
             'name': 'Client CRM Test',
             'email': 'crm@test.com',
+            'phone': '0612345678',
         })
         cls.team = cls.env['crm.team'].search([], limit=1)
 
@@ -128,6 +129,27 @@ class TestCrmLeadCustom(TransactionCase):
         lead = self._create_lead()
         result = lead.action_view_quotations()
         self.assertEqual(result.get('type'), 'ir.actions.act_window')
+
+    def test_26_open_gmail_compose(self):
+        """action_open_gmail_compose ouvre Gmail avec un destinataire."""
+        lead = self._create_lead()
+        result = lead.action_open_gmail_compose()
+        self.assertEqual(result.get('type'), 'ir.actions.act_url')
+        self.assertIn('mail.google.com', result.get('url', ''))
+
+    def test_27_call_partner(self):
+        """action_call_partner ouvre un lien téléphonique."""
+        lead = self._create_lead()
+        result = lead.action_call_partner()
+        self.assertEqual(result.get('type'), 'ir.actions.act_url')
+        self.assertTrue(result.get('url', '').startswith('tel:'))
+
+    def test_28_open_whatsapp_chat(self):
+        """action_open_whatsapp_chat ouvre une conversation WhatsApp."""
+        lead = self._create_lead()
+        result = lead.action_open_whatsapp_chat()
+        self.assertEqual(result.get('type'), 'ir.actions.act_url')
+        self.assertIn('wa.me', result.get('url', ''))
 
     # ─── Concurrents ─────────────────────────────────────────────────
 

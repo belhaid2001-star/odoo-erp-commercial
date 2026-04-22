@@ -82,6 +82,39 @@
                                help="Étiquettes pour le suivi analytique des coûts et revenus"/>
                     </group>
                 </page>
+                <page string="📦 Stock / Inventaire" name="stock_pickings">
+                    <div class="alert alert-info" role="alert">
+                        <strong>🔗 Liaison Stock :</strong>
+                        Liez cette pièce comptable aux bons de livraison ou réceptions de stock correspondants.
+                    </div>
+                    <field name="picking_ids" widget="many2many"
+                           domain="[]"
+                           help="Bons de livraison / réceptions liés à cette facture ou écriture">
+                        <tree>
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="picking_type_id"/>
+                            <field name="scheduled_date"/>
+                            <field name="state" widget="badge"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Bouton smart "Mouvements stock" dans la facture -->
+    <record id="view_account_move_form_stock_button" model="ir.ui.view">
+        <field name="name">account.move.form.stock.button</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_pickings" type="object"
+                        class="oe_stat_button" icon="fa-cubes"
+                        invisible="picking_count == 0">
+                    <field name="picking_count" string="Mouvements stock" widget="statinfo"/>
+                </button>
             </xpath>
         </field>
     </record>

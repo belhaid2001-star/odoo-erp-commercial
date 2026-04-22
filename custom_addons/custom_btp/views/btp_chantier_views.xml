@@ -43,6 +43,9 @@
                         <button name="action_view_situations" type="object" class="oe_stat_button" icon="fa-file-text-o">
                             <field name="situation_count" string="Situations" widget="statinfo"/>
                         </button>
+                        <button name="action_view_ged_documents" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="ged_document_count" string="GED" widget="statinfo"/>
+                        </button>
                         <button name="action_view_documents" type="object" class="oe_stat_button" icon="fa-folder-open">
                             <field name="document_count" string="Documents" widget="statinfo"/>
                         </button>
@@ -103,7 +106,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Financier" name="financier">
+                        <page string="Contrat &amp; pilotage" name="pilotage_contrat">
                             <group>
                                 <group string="Montants">
                                     <field name="montant_contrat"/>
@@ -125,7 +128,11 @@
                                 <field name="indice_bt_actuel"/>
                             </group>
                         </page>
-                        <page string="Lots" name="lots">
+                        <page string="Lots &amp; Consommation" name="lots">
+                            <group>
+                                <field name="taux_consommation_global" widget="progressbar"
+                                       string="Consommation globale tous lots"/>
+                            </group>
                             <field name="lot_ids">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
@@ -133,12 +140,18 @@
                                     <field name="responsable_id"/>
                                     <field name="budget_prevu"/>
                                     <field name="cout_reel"/>
-                                    <field name="ecart"/>
+                                    <field name="ecart" decoration-danger="ecart &lt; 0"/>
                                     <field name="taux_consommation" widget="progressbar"/>
                                 </tree>
                             </field>
                         </page>
-                        <page string="Situations" name="situations">
+                        <page string="Situations (Comptabilité)" name="situations">
+                            <div class="alert alert-info" role="alert">
+                                <strong>💡 Gestion financière déléguée :</strong>
+                                Les situations de travaux et la facturation sont gérées directement dans le module
+                                <strong>Comptabilité</strong>. Utilisez le bouton "Situations" en haut de cette fiche
+                                pour y accéder.
+                            </div>
                             <field name="situation_ids">
                                 <tree>
                                     <field name="numero"/>
@@ -153,6 +166,18 @@
                                            decoration-warning="state == 'valide'"
                                            decoration-primary="state == 'facture'"/>
                                 </tree>
+                            </field>
+                        </page>
+                        <page string="GED — Documents centralisés" name="ged">
+                            <div class="alert alert-success" role="alert">
+                                <strong>📁 Gestion Électronique des Documents :</strong>
+                                Sélectionnez ici les documents GED existants à affecter à ce chantier,
+                                ou créez-en via le module Documents. Évitez de re-télécharger les fichiers
+                                déjà présents dans la plateforme.
+                            </div>
+                            <field name="ged_document_ids" widget="many2many_tags"
+                                   domain="[]"
+                                   context="{'default_chantier_id': id}">
                             </field>
                         </page>
                         <page string="Documents" name="documents">
@@ -202,6 +227,8 @@
                             <field name="meteo_ids">
                                 <tree editable="bottom">
                                     <field name="date"/>
+                                    <field name="lot_id"/>
+                                    <field name="tache_id"/>
                                     <field name="intemperie"/>
                                     <field name="impact_travaux"/>
                                     <field name="description"/>
@@ -214,7 +241,11 @@
                                     <field name="product_id"/>
                                     <field name="quantite_demandee"/>
                                     <field name="quantite_livree"/>
+                                    <field name="stock_qty_available"/>
+                                    <field name="stock_virtual_available"/>
+                                    <field name="preferred_supplier_id"/>
                                     <field name="date_besoin"/>
+                                    <field name="shortage_qty"/>
                                     <field name="state" widget="badge"/>
                                     <field name="urgence" widget="boolean"/>
                                 </tree>

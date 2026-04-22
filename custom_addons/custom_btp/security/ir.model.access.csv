@@ -20,9 +20,6 @@ access_btp_engin_compagnon,btp.engin compagnon,model_btp_engin,custom_btp.group_
 access_btp_engin_pointage_directeur,btp.engin.pointage directeur,model_btp_engin_pointage,custom_btp.group_btp_directeur,1,1,1,1
 access_btp_engin_pointage_chef,btp.engin.pointage chef,model_btp_engin_pointage,custom_btp.group_btp_chef_chantier,1,1,1,0
 access_btp_engin_pointage_compagnon,btp.engin.pointage compagnon,model_btp_engin_pointage,custom_btp.group_btp_compagnon,1,0,0,0
-access_btp_maintenance_directeur,btp.maintenance directeur,model_btp_maintenance,custom_btp.group_btp_directeur,1,1,1,1
-access_btp_maintenance_chef,btp.maintenance chef,model_btp_maintenance,custom_btp.group_btp_chef_chantier,1,1,1,0
-access_btp_maintenance_compagnon,btp.maintenance compagnon,model_btp_maintenance,custom_btp.group_btp_compagnon,1,0,0,0
 access_btp_approvisionnement_directeur,btp.approvisionnement directeur,model_btp_approvisionnement,custom_btp.group_btp_directeur,1,1,1,1
 access_btp_approvisionnement_chef,btp.approvisionnement chef,model_btp_approvisionnement,custom_btp.group_btp_chef_chantier,1,1,1,0
 access_btp_approvisionnement_compagnon,btp.approvisionnement compagnon,model_btp_approvisionnement,custom_btp.group_btp_compagnon,1,0,0,0

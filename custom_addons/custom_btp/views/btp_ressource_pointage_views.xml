@@ -26,22 +26,31 @@
         <field name="model">btp.ressource</field>
         <field name="arch" type="xml">
             <form string="Ressource BTP">
+                <header>
+                    <button name="action_open_hr_employee" string="Ouvrir fiche RH complète"
+                            type="object" class="btn-secondary" icon="fa-user"/>
+                </header>
                 <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <strong>👤 Gestion RH centralisée :</strong>
+                        Sélectionnez l'employé depuis le module RH.
+                        Les informations (CIN, CNSS, contrat) sont automatiquement reprises du dossier RH.
+                    </div>
                     <group>
-                        <group string="Identification">
+                        <group string="Employé (Module RH)">
                             <field name="employee_id"/>
                             <field name="partner_id" readonly="1"/>
-                            <field name="numero_cin"/>
-                            <field name="numero_cnss"/>
+                            <field name="numero_cin" readonly="1"/>
+                            <field name="numero_cnss" readonly="1"/>
                         </group>
-                        <group string="Qualification">
+                        <group string="Qualification BTP">
                             <field name="qualification"/>
                             <field name="specialite"/>
                             <field name="type_contrat"/>
                         </group>
                     </group>
                     <group>
-                        <group string="Rémunération">
+                        <group string="Rémunération Chantier">
                             <field name="taux_horaire"/>
                             <field name="taux_journalier"/>
                         </group>

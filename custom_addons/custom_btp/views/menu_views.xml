@@ -44,14 +44,21 @@
               action="action_btp_tache"
               sequence="3"/>
 
+    <!-- Situations de travaux : accès rapide (gestion financière dans Comptabilité) -->
+    <menuitem id="menu_btp_situation"
+              name="Situations de travaux"
+              parent="menu_btp_chantiers_parent"
+              action="action_btp_situation"
+              sequence="4"/>
+
     <!-- Ressources -->
     <menuitem id="menu_btp_ressources_parent"
-              name="Ressources"
+              name="Ressources chantier"
               parent="menu_btp_root"
               sequence="20"/>
 
     <menuitem id="menu_btp_ressource_list"
-              name="Personnel"
+              name="Personnel (depuis RH)"
               parent="menu_btp_ressources_parent"
               action="action_btp_ressource"
               sequence="1"/>
@@ -68,29 +75,11 @@
               action="action_btp_engin"
               sequence="3"/>
 
-    <menuitem id="menu_btp_maintenance"
-              name="Maintenances"
-              parent="menu_btp_ressources_parent"
-              action="action_btp_maintenance"
-              sequence="4"/>
-
-    <!-- Financier -->
-    <menuitem id="menu_btp_financier_parent"
-              name="Financier"
-              parent="menu_btp_root"
-              sequence="30"/>
-
-    <menuitem id="menu_btp_situation"
-              name="Situations de travaux"
-              parent="menu_btp_financier_parent"
-              action="action_btp_situation"
-              sequence="1"/>
-
     <menuitem id="menu_btp_approvisionnement"
-              name="Approvisionnements"
-              parent="menu_btp_financier_parent"
+              name="Approvisionnements (Stock/Achats)"
+              parent="menu_btp_ressources_parent"
               action="action_btp_approvisionnement"
-              sequence="2"/>
+              sequence="4"/>
 
     <!-- Suivi -->
     <menuitem id="menu_btp_suivi_parent"

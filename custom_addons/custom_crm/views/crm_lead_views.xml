@@ -11,8 +11,17 @@
                 <button name="action_log_call"
                         string="📞 Enregistrer appel"
                         type="object" class="btn-secondary"/>
+                <button name="action_call_partner"
+                        string="Téléphoner"
+                        type="object" class="btn-secondary"/>
                 <button name="action_schedule_meeting"
                         string="📅 Planifier RDV"
+                        type="object" class="btn-secondary"/>
+                <button name="action_open_gmail_compose"
+                        string="Gmail"
+                        type="object" class="btn-secondary"/>
+                <button name="action_open_whatsapp_chat"
+                        string="WhatsApp"
                         type="object" class="btn-secondary"/>
                 <button name="action_quick_quotation"
                         string="📋 Devis rapide"

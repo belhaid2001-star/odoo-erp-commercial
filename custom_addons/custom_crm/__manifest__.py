@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Gestion Commerciale - CRM',
-    'version': '17.0.1.0.0',
+    'version': '17.0.2.0.0',
     'category': 'Sales/CRM',
     'summary': 'CRM avancé - pistes, opportunités, pipelines, activités',
     'description': """
@@ -17,6 +17,7 @@
         'crm',
         'sale_crm',
         'calendar',
+        'custom_whatsapp',
     ],
     'data': [
         'security/ir.model.access.csv',

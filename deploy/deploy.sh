@@ -48,7 +48,7 @@ if [ -d "$PROJECT_DIR" ]; then
     cd $PROJECT_DIR
     git pull origin main
 else
-    git clone https://github.com/belhaid2001-glitch/odoo-erp-commercial.git $PROJECT_DIR
+    git clone https://github.com/belhaid2001-star/odoo-erp-commercial.git $PROJECT_DIR
     cd $PROJECT_DIR
 fi
 
@@ -72,8 +72,9 @@ cp deploy/odoo.prod.conf config/odoo.conf
 # Créer les dossiers certbot
 mkdir -p deploy/certbot/conf deploy/certbot/www
 
-# Lancer avec le docker-compose de production
-docker compose -f deploy/docker-compose.prod.yml up -d
+# Lancer avec le docker-compose de production et attendre que les services soient sains
+docker compose -f deploy/docker-compose.prod.yml up -d --wait
+docker compose -f deploy/docker-compose.prod.yml ps
 
 echo ""
 echo "=========================================="

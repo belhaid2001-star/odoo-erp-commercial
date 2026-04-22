@@ -18,6 +18,7 @@ class BtpTache(models.Model):
     sequence = fields.Integer(default=10)
     lot_id = fields.Many2one('btp.lot', string='Lot', required=True, ondelete='cascade')
     chantier_id = fields.Many2one('btp.chantier', string='Chantier', related='lot_id.chantier_id', store=True)
+    project_task_id = fields.Many2one('project.task', string='Tâche To-Do', readonly=True, copy=False, ondelete='set null')
 
     # ──────────────── Hiérarchie ────────────────
     parent_id = fields.Many2one('btp.tache', string='Tâche parente', ondelete='cascade')
@@ -51,6 +52,7 @@ class BtpTache(models.Model):
 
     # ──────────────── Couleur Kanban ────────────────
     color = fields.Integer(string='Couleur')
+    meteo_ids = fields.One2many('btp.meteo', 'tache_id', string='Suivi météo')
 
     # ──────────────── Calculs ────────────────
     @api.depends('chantier_id.pointage_ids', 'chantier_id.pointage_ids.heures_normales')
@@ -63,7 +65,68 @@ class BtpTache(models.Model):
     def _expand_states(self, states, domain, order):
         return [key for key, val in type(self).state.selection]
 
+    def _prepare_project_task_vals(self):
+        self.ensure_one()
+        project = self.chantier_id._ensure_project()
+        description_parts = [
+            f"Chantier : {self.chantier_id.name}",
+            f"Lot : {self.lot_id.name}",
+        ]
+        if self.date_debut:
+            description_parts.append(f"Début prévu : {self.date_debut}")
+        if self.date_fin:
+            description_parts.append(f"Fin prévue : {self.date_fin}")
+        if self.priorite:
+            description_parts.append(f"Priorité : {self.priorite}")
+        return {
+            'name': self.name,
+            'project_id': project.id,
+            'partner_id': self.chantier_id.maitre_ouvrage_id.id or False,
+            'date_deadline': self.date_fin or False,
+            'description': '\n'.join(description_parts),
+            'user_ids': [(6, 0, [self.responsable_id.id])] if self.responsable_id else [(5, 0, 0)],
+        }
+
+    def _sync_project_task(self):
+        Task = self.env['project.task'].with_context(mail_create_nosubscribe=True)
+        for rec in self.filtered(lambda task: task.chantier_id):
+            vals = rec._prepare_project_task_vals()
+            if rec.project_task_id:
+                rec.project_task_id.write(vals)
+            else:
+                task = Task.create(vals)
+                rec.with_context(skip_btp_sync=True).write({'project_task_id': task.id})
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        if not self.env.context.get('skip_btp_sync'):
+            records._sync_project_task()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if self.env.context.get('skip_btp_sync'):
+            return res
+        sync_fields = {'name', 'lot_id', 'date_debut', 'date_fin', 'responsable_id', 'priorite'}
+        if sync_fields.intersection(vals):
+            self._sync_project_task()
+        return res
+
     # ──────────────── Actions ────────────────
+    def action_open_todo_task(self):
+        self.ensure_one()
+        if not self.project_task_id:
+            self._sync_project_task()
+        return {
+            'name': 'To-Do global',
+            'type': 'ir.actions.act_window',
+            'res_model': 'project.task',
+            'res_id': self.project_task_id.id,
+            'view_mode': 'form',
+            'views': [(False, 'form')],
+        }
+
     def action_demarrer(self):
         self.write({'state': 'en_cours'})
 

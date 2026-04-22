@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from urllib.parse import quote
 
 
 class CrmLead(models.Model):
@@ -183,6 +184,63 @@ class CrmLead(models.Model):
             'res_model': 'sale.order',
             'view_mode': 'tree,form',
             'domain': [('opportunity_id', '=', self.id)],
+        }
+
+    def _get_primary_email(self):
+        self.ensure_one()
+        return self.email_from or self.partner_id.email
+
+    def _get_primary_phone(self):
+        self.ensure_one()
+        return self.phone or self.mobile or self.partner_id.mobile or self.partner_id.phone
+
+    def _format_whatsapp_phone(self, phone):
+        if not phone:
+            return ''
+        clean = ''.join(c for c in phone if c.isdigit() or c == '+')
+        if clean.startswith('0') and len(clean) == 10:
+            clean = '+212' + clean[1:]
+        elif clean.startswith('212') and not clean.startswith('+'):
+            clean = '+' + clean
+        return clean.lstrip('+')
+
+    def action_open_gmail_compose(self):
+        self.ensure_one()
+        email = self._get_primary_email()
+        if not email:
+            raise UserError(_("Aucune adresse email n'est renseignée sur cette opportunité."))
+        subject = quote(_("Suivi opportunité - %s") % self.name)
+        body = quote(_("Bonjour,\n\nJe reviens vers vous au sujet de %s.\n\nCordialement,") % self.name)
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f"https://mail.google.com/mail/?view=cm&fs=1&to={quote(email)}&su={subject}&body={body}",
+            'target': 'new',
+        }
+
+    def action_call_partner(self):
+        self.ensure_one()
+        phone = self._get_primary_phone()
+        if not phone:
+            raise UserError(_("Aucun numéro de téléphone n'est renseigné sur cette opportunité."))
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f"tel:{quote(phone)}",
+            'target': 'self',
+        }
+
+    def action_open_whatsapp_chat(self):
+        self.ensure_one()
+        phone = False
+        if self.partner_id and 'whatsapp_number' in self.partner_id._fields:
+            phone = self.partner_id.whatsapp_number
+        phone = self._format_whatsapp_phone(phone or self._get_primary_phone())
+        if not phone:
+            raise UserError(_("Aucun numéro WhatsApp exploitable n'est disponible sur cette opportunité."))
+        message = quote(_("Bonjour, je vous contacte au sujet de %s.") % self.name)
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f"https://wa.me/{phone}?text={message}",
+            'target': 'new',
         }
 
 

@@ -34,8 +34,6 @@
                             invisible="state != 'disponible'"/>
                     <button name="action_declarer_panne" string="Déclarer panne" type="object" class="btn-danger"
                             invisible="state not in ('en_service', 'disponible')"/>
-                    <button name="action_envoyer_maintenance" string="Envoyer en maintenance" type="object" class="btn-warning"
-                            invisible="state == 'en_maintenance'"/>
                     <button name="action_rendre_disponible" string="Rendre disponible" type="object"
                             invisible="state == 'disponible'"/>
                     <field name="state" widget="statusbar" statusbar_visible="disponible,en_service"/>
@@ -49,7 +47,6 @@
                         <group string="Identification">
                             <field name="type_engin"/>
                             <field name="immatriculation"/>
-                            <field name="equipment_id"/>
                         </group>
                         <group string="Utilisation">
                             <field name="chantier_id"/>
@@ -73,17 +70,6 @@
                                     <field name="operateur_id"/>
                                     <field name="heures_utilisation"/>
                                     <field name="gasoil_litres"/>
-                                    <field name="cout_total"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Maintenances">
-                            <field name="maintenance_ids">
-                                <tree>
-                                    <field name="date_planifiee"/>
-                                    <field name="date_realisee"/>
-                                    <field name="type"/>
-                                    <field name="description"/>
                                     <field name="cout_total"/>
                                 </tree>
                             </field>
@@ -135,62 +121,5 @@
         <field name="view_mode">kanban,tree,form</field>
     </record>
 
-    <!-- ============================================================ -->
-    <!-- Vues Maintenance                                              -->
-    <!-- ============================================================ -->
-    <record id="view_btp_maintenance_tree" model="ir.ui.view">
-        <field name="name">btp.maintenance.tree</field>
-        <field name="model">btp.maintenance</field>
-        <field name="arch" type="xml">
-            <tree string="Maintenances">
-                <field name="engin_id"/>
-                <field name="type"/>
-                <field name="date_planifiee"/>
-                <field name="date_realisee"/>
-                <field name="fournisseur_id"/>
-                <field name="cout_total"/>
-            </tree>
-        </field>
-    </record>
-
-    <record id="view_btp_maintenance_form" model="ir.ui.view">
-        <field name="name">btp.maintenance.form</field>
-        <field name="model">btp.maintenance</field>
-        <field name="arch" type="xml">
-            <form string="Maintenance">
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="engin_id"/>
-                            <field name="type"/>
-                            <field name="fournisseur_id"/>
-                        </group>
-                        <group>
-                            <field name="date_planifiee"/>
-                            <field name="date_realisee"/>
-                        </group>
-                    </group>
-                    <group>
-                        <group>
-                            <field name="cout_pieces"/>
-                            <field name="cout_main_oeuvre"/>
-                            <field name="cout_total"/>
-                        </group>
-                    </group>
-                    <field name="description" placeholder="Description de la maintenance..."/>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="message_ids"/>
-                </div>
-            </form>
-        </field>
-    </record>
-
-    <record id="action_btp_maintenance" model="ir.actions.act_window">
-        <field name="name">Maintenances</field>
-        <field name="res_model">btp.maintenance</field>
-        <field name="view_mode">tree,form</field>
-    </record>
 
 </odoo>

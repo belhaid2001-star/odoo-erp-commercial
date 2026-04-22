@@ -124,7 +124,11 @@
                 <field name="product_id"/>
                 <field name="quantite_demandee"/>
                 <field name="quantite_livree"/>
+                <field name="stock_qty_available"/>
+                <field name="stock_virtual_available"/>
+                <field name="preferred_supplier_id"/>
                 <field name="date_besoin"/>
+                <field name="shortage_qty"/>
                 <field name="purchase_order_id"/>
                 <field name="urgence"/>
                 <field name="state" widget="badge"
@@ -144,6 +148,8 @@
                 <header>
                     <button name="action_creer_commande" string="Créer commande fournisseur" type="object"
                             class="btn-primary" invisible="state != 'demande'"/>
+                    <button name="action_open_purchase_order" string="Ouvrir commande" type="object"
+                            class="btn-secondary" invisible="not purchase_order_id"/>
                 </header>
                 <sheet>
                     <group>
@@ -151,6 +157,7 @@
                             <field name="chantier_id"/>
                             <field name="lot_id" domain="[('chantier_id', '=', chantier_id)]"/>
                             <field name="product_id"/>
+                            <field name="product_uom_id" readonly="1"/>
                             <field name="urgence"/>
                         </group>
                         <group>
@@ -168,6 +175,18 @@
                         <group>
                             <field name="date_livraison_prevue"/>
                             <field name="date_livraison_reelle"/>
+                        </group>
+                    </group>
+                    <group string="Disponibilité stock &amp; achat">
+                        <group>
+                            <field name="stock_qty_available" readonly="1"/>
+                            <field name="stock_virtual_available" readonly="1"/>
+                            <field name="shortage_qty" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="availability_status" readonly="1"/>
+                            <field name="preferred_supplier_id" readonly="1"/>
+                            <field name="supplier_delay" readonly="1"/>
                         </group>
                     </group>
                 </sheet>

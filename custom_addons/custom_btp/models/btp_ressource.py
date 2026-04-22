@@ -51,9 +51,23 @@ class BtpRessource(models.Model):
         ('tacheronnat', 'Tâcheronnat'),
     ], string='Type de contrat', required=True, default='journalier')
 
-    # ──────────────── Documents ────────────────
-    numero_cnss = fields.Char(string='N° CNSS')
-    numero_cin = fields.Char(string='N° CIN')
+    # ──────────────── Documents (depuis le module RH — lecture seule) ────────────────
+    # Ces données sont gérées directement dans le module RH principal.
+    # Sélectionner un employé suffit — les informations remontent automatiquement.
+    numero_cnss = fields.Char(
+        string='N° CNSS',
+        related='employee_id.cnss_number',
+        readonly=True,
+        store=True,
+        help="Issu du dossier RH de l'employé. Modifier via le module RH.",
+    )
+    numero_cin = fields.Char(
+        string='N° CIN',
+        related='employee_id.cin',
+        readonly=True,
+        store=True,
+        help="Issu du dossier RH de l'employé. Modifier via le module RH.",
+    )
 
     # ──────────────── Affectation ────────────────
     chantier_ids = fields.Many2many('btp.chantier', string='Chantiers affectés')
@@ -68,7 +82,19 @@ class BtpRessource(models.Model):
         for rec in self:
             rec.name = rec.employee_id.name if rec.employee_id else ''
 
+    def action_open_hr_employee(self):
+        """Ouvrir la fiche RH complète de l'employé."""
+        self.ensure_one()
+        if not self.employee_id:
+            return
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.employee',
+            'res_id': self.employee_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
     _sql_constraints = [
-        ('cin_unique', 'unique(numero_cin)', 'Le numéro CIN doit être unique !'),
         ('taux_horaire_positive', 'CHECK(taux_horaire >= 0)', 'Le taux horaire doit être positif !'),
     ]

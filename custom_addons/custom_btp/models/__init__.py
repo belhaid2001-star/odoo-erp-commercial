@@ -6,7 +6,7 @@ from . import btp_ressource
 from . import btp_pointage
 from . import btp_engin
 from . import btp_engin_pointage
-from . import btp_maintenance
+# btp_maintenance supprimé — maintenance déléguée au module Maintenance Odoo natif
 from . import btp_approvisionnement
 from . import btp_situation
 from . import btp_reception

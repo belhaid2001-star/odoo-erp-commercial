@@ -107,6 +107,24 @@ class BtpChantier(models.Model):
     meteo_ids = fields.One2many('btp.meteo', 'chantier_id', string='Météo')
     approvisionnement_ids = fields.One2many('btp.approvisionnement', 'chantier_id', string='Approvisionnements')
 
+    # ──────────────── GED : lien vers Documents centralisés ────────────────
+    ged_document_ids = fields.Many2many(
+        'document.document',
+        'btp_chantier_document_rel',
+        'chantier_id',
+        'document_id',
+        string='Documents GED',
+    )
+    ged_document_count = fields.Integer(compute='_compute_ged_document_count', string='Documents GED')
+
+    # ──────────────── Consommation globale lots ────────────────
+    taux_consommation_global = fields.Float(
+        string='Consommation globale (%)',
+        compute='_compute_taux_consommation_global',
+        store=True,
+        help="Taux de consommation budgétaire moyen pondéré de tous les lots du chantier.",
+    )
+
     # ──────────────── Compteurs ────────────────
     lot_count = fields.Integer(compute='_compute_counts')
     situation_count = fields.Integer(compute='_compute_counts')
@@ -186,6 +204,21 @@ class BtpChantier(models.Model):
             rec.reunion_count = len(rec.reunion_ids)
             rec.engin_count = len(rec.engin_ids)
 
+    def _compute_ged_document_count(self):
+        for rec in self:
+            rec.ged_document_count = len(rec.ged_document_ids)
+
+    @api.depends('lot_ids', 'lot_ids.budget_prevu', 'lot_ids.cout_reel')
+    def _compute_taux_consommation_global(self):
+        """Taux de consommation budgétaire global : coût réel total / budget total des lots."""
+        for rec in self:
+            budget_total = sum(rec.lot_ids.mapped('budget_prevu'))
+            cout_total = sum(rec.lot_ids.mapped('cout_reel'))
+            if budget_total:
+                rec.taux_consommation_global = (cout_total / budget_total) * 100
+            else:
+                rec.taux_consommation_global = 0.0
+
     def _expand_states(self, states, domain, order):
         """Afficher tous les états dans la vue Kanban"""
         return [key for key, val in type(self).state.selection]
@@ -197,6 +230,20 @@ class BtpChantier(models.Model):
             if vals.get('reference', 'Nouveau') == 'Nouveau':
                 vals['reference'] = self.env['ir.sequence'].next_by_code('btp.chantier') or 'Nouveau'
         return super().create(vals_list)
+
+    def _ensure_project(self):
+        """Garantit un projet Odoo pour synchroniser les tâches chantier avec le To-Do global."""
+        Project = self.env['project.project']
+        for rec in self:
+            if rec.project_id:
+                continue
+            project_vals = {
+                'name': rec.reference and f"[{rec.reference}] {rec.name}" or rec.name,
+            }
+            if 'partner_id' in Project._fields and rec.maitre_ouvrage_id:
+                project_vals['partner_id'] = rec.maitre_ouvrage_id.id
+            rec.project_id = Project.create(project_vals)
+        return self.project_id
 
     # ──────────────── Actions de workflow ────────────────
     def action_appel_offres(self):
@@ -312,6 +359,21 @@ class BtpChantier(models.Model):
             'view_mode': 'tree,kanban,form',
             'domain': [('chantier_id', '=', self.id)],
             'context': {'default_chantier_id': self.id},
+        }
+
+    def action_view_ged_documents(self):
+        """Ouvrir les documents GED liés à ce chantier."""
+        self.ensure_one()
+        return {
+            'name': 'Documents GED — ' + self.name,
+            'type': 'ir.actions.act_window',
+            'res_model': 'document.document',
+            'view_mode': 'kanban,tree,form',
+            'domain': [('id', 'in', self.ged_document_ids.ids)],
+            'context': {
+                'default_chantier_id': self.id,
+                'default_folder_id': False,
+            },
         }
 
     # ──────────────── Cron journalier : alertes ────────────────

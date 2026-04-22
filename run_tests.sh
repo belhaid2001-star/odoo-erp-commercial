@@ -33,6 +33,7 @@ ALL_MODULES=(
     "custom_contacts"
     "custom_dashboard"
     "custom_ai"
+    "custom_btp"
 )
 
 # ─── Couleurs ────────────────────────────────────────────────────────

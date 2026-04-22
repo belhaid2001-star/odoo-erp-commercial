@@ -15,7 +15,6 @@ class BtpEngin(models.Model):
 
     # ──────────────── Identification ────────────────
     name = fields.Char(string='Nom / Désignation', required=True)
-    equipment_id = fields.Many2one('maintenance.equipment', string='Équipement maintenance', ondelete='set null')
     immatriculation = fields.Char(string='Immatriculation')
     image = fields.Binary(string='Photo')
 
@@ -57,8 +56,6 @@ class BtpEngin(models.Model):
 
     # ──────────────── Relations ────────────────
     pointage_ids = fields.One2many('btp.engin.pointage', 'engin_id', string='Pointages engin')
-    maintenance_ids = fields.One2many('btp.maintenance', 'engin_id', string='Maintenances')
-
     # ──────────────── Couleur Kanban ────────────────
     color = fields.Integer(string='Couleur')
 
@@ -79,9 +76,6 @@ class BtpEngin(models.Model):
 
     def action_declarer_panne(self):
         self.write({'state': 'en_panne'})
-
-    def action_envoyer_maintenance(self):
-        self.write({'state': 'en_maintenance'})
 
     def action_rendre_disponible(self):
         self.write({'state': 'disponible'})

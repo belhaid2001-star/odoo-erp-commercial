@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Gestion Commerciale - Comptabilité & Facturation',
-    'version': '17.0.1.0.0',
+    'version': '17.0.2.0.0',
     'category': 'Accounting',
-    'summary': 'Comptabilité avancée, rapprochement bancaire, analytique',
+    'summary': 'Comptabilité avancée, rapprochement bancaire, analytique — lié à Stock & Inventaire',
     'description': """
         Module de comptabilité et facturation incluant :
         - Gestion des factures et paiements clients et fournisseurs
@@ -18,6 +18,9 @@
     'depends': [
         'account',
         'account_payment',
+        'stock',
+        'purchase',
+        'sale_management',
     ],
     'data': [
         'security/ir.model.access.csv',

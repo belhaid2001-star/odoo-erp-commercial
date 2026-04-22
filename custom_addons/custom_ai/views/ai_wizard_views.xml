@@ -7,7 +7,23 @@
         <field name="model">ai.wizard</field>
         <field name="arch" type="xml">
             <form string="🏗️ Mohasib — Expert-Comptable IA">
-                <group>
+
+                <!-- ══════════ MODE COMMANDE VOCALE ══════════ -->
+                <div class="alert alert-info" role="alert"
+                     invisible="not use_voice_mode">
+                    <strong>🎙️ Mode commande vocale activé</strong> — Collez la transcription
+                    de votre commande vocale ci-dessous. L'IA créera automatiquement les
+                    activités correspondantes dans cet enregistrement.
+                </div>
+
+                <group invisible="not use_voice_mode">
+                    <field name="voice_transcript" widget="text" nolabel="1"
+                           placeholder="Ex : Appelle Mohamed demain matin à 10h pour discuter de l'offre BTP. Puis envoie-lui un email de suivi dans 3 jours avec le devis."
+                           style="min-height: 100px;"/>
+                </group>
+
+                <!-- ══════════ MODE STANDARD ══════════ -->
+                <group invisible="use_voice_mode">
                     <group string="🎯 Action">
                         <field name="action_type" widget="radio"/>
                         <field name="custom_prompt" widget="text"
@@ -20,16 +36,34 @@
                         <field name="module_name" readonly="1"/>
                     </group>
                 </group>
+
+                <!-- Toggle mode vocal -->
+                <group>
+                    <field name="use_voice_mode" widget="boolean_toggle"
+                           string="🎙️ Mode commande vocale (créer activités)"/>
+                </group>
+
+                <!-- Activités créées (après génération) -->
+                <div class="alert alert-success" role="alert"
+                     invisible="activity_count == 0">
+                    <strong>📌 <field name="activity_count" readonly="1"/> activité(s) créée(s)</strong>
+                    depuis votre commande vocale.
+                </div>
+
                 <separator string="💡 Résultat IA" invisible="not ai_result"/>
                 <field name="ai_result" invisible="not ai_result"
                        class="o_field_html"/>
                 <field name="ai_provider" invisible="1"/>
                 <footer>
                     <button name="action_generate" type="object"
-                            string="🚀 Générer" class="btn-primary"/>
+                            string="🚀 Générer" class="btn-primary"
+                            invisible="use_voice_mode"/>
+                    <button name="action_generate" type="object"
+                            string="📌 Créer les activités" class="btn-primary"
+                            invisible="not use_voice_mode"/>
                     <button name="action_apply" type="object"
                             string="✅ Appliquer" class="btn-success"
-                            invisible="not ai_result"/>
+                            invisible="not ai_result or use_voice_mode"/>
                     <button string="Fermer" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

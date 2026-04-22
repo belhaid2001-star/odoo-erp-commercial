@@ -39,6 +39,7 @@ $AllModules = @(
     "custom_contacts"
     "custom_dashboard"
     "custom_ai"
+    "custom_btp"
 )
 
 # --- Aide ---
@@ -58,7 +59,7 @@ if ($Help) {
 
   Modules disponibles :
     sale, purchase, stock, accounting, hr, crm,
-    calendar, documents, discuss, contacts, dashboard, ai
+    calendar, documents, discuss, contacts, dashboard, ai, btp
 
 "@
     exit 0
