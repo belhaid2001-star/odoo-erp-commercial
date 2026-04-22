@@ -67,6 +67,7 @@ Module complet de gestion de chantiers BTP adapté au contexte marocain :
         'account',
         'mail',
         'custom_hr',
+        'custom_documents',
     ],
     'data': [
         # Sécurité

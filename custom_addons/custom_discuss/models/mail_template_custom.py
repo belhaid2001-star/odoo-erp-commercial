@@ -50,17 +50,17 @@ class MailMessageCustom(models.Model):
 
     # ──────────────── Note vocale ────────────────
     voice_note = fields.Binary(
-        string='Note vocale',
+        string='Audio de la note vocale',
         attachment=True,
         help="Enregistrement audio de la note vocale (format WebM/Ogg).",
     )
     voice_note_filename = fields.Char(string='Fichier audio')
     voice_note_duration = fields.Float(
-        string='Durée (secondes)',
-        help="Durée de la note vocale en secondes.",
+        string='Duree (secondes)',
+        help="Duree de la note vocale en secondes.",
     )
     is_voice_message = fields.Boolean(
-        string='Note vocale',
+        string='Est une note vocale',
         default=False,
         help="Indique si ce message est une note vocale.",
     )
