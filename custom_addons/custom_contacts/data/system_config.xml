@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <!-- noupdate="0" : forcé à chaque mise à jour du module -->
+    <data noupdate="0">
 
         <!-- ============================================================ -->
-        <!-- Devise : Dirham Marocain (MAD) par defaut -->
+        <!-- Devise : Dirham Marocain (MAD) par defaut                     -->
         <!-- ============================================================ -->
         <record id="base.MAD" model="res.currency">
             <field name="name">MAD</field>
@@ -15,12 +16,12 @@
             <field name="decimal_places">2</field>
         </record>
 
-        <!-- EUR devise secondaire -->
+        <!-- EUR devise secondaire active -->
         <record id="base.EUR" model="res.currency">
             <field name="active" eval="True"/>
         </record>
 
-        <!-- USD devise secondaire -->
+        <!-- USD devise secondaire active -->
         <record id="base.USD" model="res.currency">
             <field name="active" eval="True"/>
         </record>
@@ -31,7 +32,6 @@
         <record id="base.main_company" model="res.company">
             <field name="currency_id" ref="base.MAD"/>
             <field name="country_id" ref="base.ma"/>
-            <field name="phone">+212</field>
         </record>
 
         <!-- Admin : langue francaise -->
@@ -48,6 +48,12 @@
         <record id="system_param_lang" model="ir.config_parameter">
             <field name="key">lang</field>
             <field name="value">fr_FR</field>
+        </record>
+
+        <!-- MAD comme devise principale du systeme -->
+        <record id="system_param_currency_position" model="ir.config_parameter">
+            <field name="key">web.base.currency</field>
+            <field name="value">MAD</field>
         </record>
 
     </data>

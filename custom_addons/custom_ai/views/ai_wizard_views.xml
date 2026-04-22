@@ -30,7 +30,7 @@
                                placeholder="Décrivez votre demande ici..."
                                invisible="action_type not in ('custom', 'btp_conseil', 'btp_saisie')"/>
                     </group>
-                    <group string="📄 Contexte">
+                    <group string="📄 Contexte" invisible="not res_model">
                         <field name="res_model" readonly="1"/>
                         <field name="res_id" readonly="1"/>
                         <field name="module_name" readonly="1"/>

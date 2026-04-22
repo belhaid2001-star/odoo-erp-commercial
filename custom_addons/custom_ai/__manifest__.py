@@ -31,10 +31,11 @@ Mohasib — Expert-Comptable IA BTP
         'views/ai_config_views.xml',
         'views/ai_wizard_views.xml',
         'views/ai_buttons_views.xml',
+        'views/menu_views.xml',
     ],
     'images': ['static/description/icon.png'],
     'installable': True,
-    'application': False,
+    'application': True,
     'auto_install': False,
     'license': 'LGPL-3',
 }

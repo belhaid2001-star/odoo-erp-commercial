@@ -19,6 +19,7 @@
         'account',
         'account_payment',
         'stock',
+        'stock_account',
         'purchase',
         'sale_management',
     ],

@@ -11,9 +11,9 @@ class AIWizard(models.TransientModel):
     _description = 'Assistant IA'
 
     # Context fields
-    res_model = fields.Char(string='Modèle source', required=True)
+    res_model = fields.Char(string='Modèle source')
     res_id = fields.Integer(string='ID enregistrement')
-    module_name = fields.Char(string='Module')
+    module_name = fields.Char(string='Module', default='general')
 
     # ──────────────── Commande vocale ────────────────
     voice_transcript = fields.Text(
