@@ -52,8 +52,8 @@ Module 7 - Rapports et etats financiers
         ],
     },
     'images': ['static/description/icon.png'],
-    'installable': True,
-    'application': True,
+    'installable': False,
+    'application': False,
     'auto_install': False,
     'license': 'LGPL-3',
 }
