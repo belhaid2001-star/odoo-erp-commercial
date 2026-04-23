@@ -181,8 +181,8 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
         <field name="arch" type="xml">
-            <!-- Charger les champs BTP dans le kanban -->
-            <xpath expr="//templates" position="before">
+            <!-- Charger les champs BTP dans le kanban (après color, enfant direct de kanban garanti) -->
+            <xpath expr="//kanban/field[@name='color']" position="after">
                 <field name="btp_project_type"/>
                 <field name="btp_surface"/>
                 <field name="btp_site_city"/>
@@ -192,16 +192,16 @@
             <!-- Afficher les infos BTP et actions rapides dans la carte -->
             <xpath expr="//t[@t-name='kanban-box']" position="inside">
                 <div class="mt-1 pt-1 border-top small text-muted"
-                     t-if="record.btp_project_type.raw_value or record.btp_site_city.raw_value or record.btp_visit_date.value">
-                    <t t-if="record.btp_project_type.raw_value">
+                     t-if="(record.btp_project_type and record.btp_project_type.raw_value) or (record.btp_site_city and record.btp_site_city.raw_value) or (record.btp_visit_date and record.btp_visit_date.value)">
+                    <t t-if="record.btp_project_type and record.btp_project_type.raw_value">
                         <div>
-                            <span>&#127959;&#65039; <t t-esc="record.btp_project_type.value"/><t t-if="record.btp_surface.raw_value"> · <t t-esc="record.btp_surface.raw_value"/> m²</t></span>
+                            <span>&#127959;&#65039; <t t-esc="record.btp_project_type.value"/><t t-if="record.btp_surface and record.btp_surface.raw_value"> · <t t-esc="record.btp_surface.raw_value"/> m²</t></span>
                         </div>
                     </t>
-                    <t t-if="record.btp_site_city.raw_value">
+                    <t t-if="record.btp_site_city and record.btp_site_city.raw_value">
                         <div>&#128205; <t t-esc="record.btp_site_city.value"/></div>
                     </t>
-                    <t t-if="record.btp_visit_date.value">
+                    <t t-if="record.btp_visit_date and record.btp_visit_date.value">
                         <div>&#128197; Visite : <t t-esc="record.btp_visit_date.value"/></div>
                     </t>
                     <div class="mt-1">
@@ -214,11 +214,11 @@
                 <div class="d-flex gap-1 mt-1" t-if="record.type.raw_value == 'opportunity'">
                     <button name="action_schedule_site_visit" type="object"
                             class="btn btn-sm btn-outline-secondary"
-                            t-if="!record.btp_visit_done.raw_value"
+                            t-if="!(record.btp_visit_done and record.btp_visit_done.raw_value)"
                             title="Planifier visite chantier">&#128197;</button>
                     <button name="action_mark_visit_done" type="object"
                             class="btn btn-sm btn-outline-success"
-                            t-if="!record.btp_visit_done.raw_value"
+                            t-if="!(record.btp_visit_done and record.btp_visit_done.raw_value)"
                             title="Visite effectuée">&#9989;</button>
                     <button name="action_quick_quotation" type="object"
                             class="btn btn-sm btn-outline-primary"
