@@ -103,9 +103,9 @@
                     <div class="alert alert-light" role="alert" style="margin-bottom:10px;">
                         <i class="fa fa-paperclip"/> Ajoutez ici tout document justificatif lié à cette écriture : bon de commande, contrat, bon de livraison, note d'honoraires, etc.
                     </div>
-                    <field name="attachment_ids"
+                    <field name="doc_attachment_ids"
                            widget="many2many_binary"
-                           string="Pièces jointes (Documents)"
+                           string="Pièces justificatives"
                            help="Téléversez les documents justificatifs de cette écriture comptable"/>
                 </page>
             </xpath>

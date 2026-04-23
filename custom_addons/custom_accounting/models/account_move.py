@@ -80,6 +80,16 @@ class AccountMove(models.Model):
         compute='_compute_picking_count',
     )
 
+    # ──────────────── Documents justificatifs ────────────────
+    doc_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'account_move_doc_attachment_rel',
+        'move_id',
+        'attachment_id',
+        string='Pièces justificatives',
+        help="Documents justificatifs liés à cette écriture comptable : bons de commande, contrats, bons de livraison, etc.",
+    )
+
     def _compute_picking_count(self):
         for move in self:
             move.picking_count = len(move.picking_ids)
