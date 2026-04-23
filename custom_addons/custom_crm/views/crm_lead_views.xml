@@ -181,8 +181,8 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
         <field name="arch" type="xml">
-            <!-- Charger les champs BTP dans le kanban -->
-            <xpath expr="//field[@name='expected_revenue']" position="after">
+            <!-- Charger les champs BTP dans le kanban (avant les templates pour garantir le chargement comme data) -->
+            <xpath expr="//templates" position="before">
                 <field name="lead_quality"/>
                 <field name="lead_source"/>
                 <field name="btp_project_type"/>
