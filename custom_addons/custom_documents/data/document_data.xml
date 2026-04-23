@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
 
-        <!-- Dossiers par défaut -->
+        <!-- Dossiers par dÃ©faut -->
         <record id="folder_general" model="document.folder">
-            <field name="name">Général</field>
+            <field name="name">GÃ©nÃ©ral</field>
             <field name="sequence">1</field>
-            <field name="description">Documents généraux de l'entreprise</field>
+            <field name="description">Documents gÃ©nÃ©raux de l'entreprise</field>
         </record>
 
         <record id="folder_contracts" model="document.folder">
@@ -18,7 +18,7 @@
         <record id="folder_hr" model="document.folder">
             <field name="name">Ressources Humaines</field>
             <field name="sequence">3</field>
-            <field name="description">Documents RH et employés</field>
+            <field name="description">Documents RH et employÃ©s</field>
         </record>
 
         <record id="folder_finance" model="document.folder">
@@ -30,10 +30,10 @@
         <record id="folder_legal" model="document.folder">
             <field name="name">Juridique</field>
             <field name="sequence">5</field>
-            <field name="description">Documents juridiques et réglementaires</field>
+            <field name="description">Documents juridiques et rÃ©glementaires</field>
         </record>
 
-        <!-- Étiquettes par défaut -->
+        <!-- Ã‰tiquettes par dÃ©faut -->
         <record id="tag_important" model="document.tag">
             <field name="name">Important</field>
             <field name="color">1</field>
@@ -50,96 +50,96 @@
         </record>
 
         <record id="tag_a_signer" model="document.tag">
-            <field name="name">À signer</field>
+            <field name="name">Ã€ signer</field>
             <field name="color">3</field>
         </record>
 
         <record id="tag_archiver" model="document.tag">
-            <field name="name">À archiver</field>
+            <field name="name">Ã€ archiver</field>
             <field name="color">6</field>
         </record>
 
         <!-- ============================================================
-             DOCUMENTS DE DÉMONSTRATION — Contexte BTP Maroc
+             DOCUMENTS DE DÃ‰MONSTRATION â€” Contexte BTP Maroc
         ============================================================ -->
 
         <!-- 1. Contrat sous-traitance -->
         <record id="demo_doc_contrat_st" model="document.document">
-            <field name="name">Contrat de sous-traitance — Al Omrane Developpement</field>
+            <field name="name">Contrat de sous-traitance â€” Al Omrane Developpement</field>
             <field name="folder_id" ref="folder_contracts"/>
             <field name="document_type">contract</field>
             <field name="state">validated</field>
             <field name="version">1</field>
             <field name="expiration_date">2026-12-31</field>
-            <field name="notes">Contrat de sous-traitance pour la réalisation des travaux de gros œuvre du projet Résidence Al Farah à Casablanca. Montant global : 2 500 000 MAD HT. Durée des travaux : 8 mois.</field>
-            <field name="file" type="base64">Q09OVFJBVCBERSBTT1VTLVRSQUlUQU5DRQo9PT09PT09PT09PT09PT09PT09PQoKUGFydGllcyA6CiAtIEVudHJlcHJlbmV1ciBwcmluY2lwYWwgOiBDb25zdHJ1Y3Rpb24gU0FSTAogLSBTb3VzLXRyYWl0YW50IDogQWwgT21yYW5lIERldmVsb3BwZW1lbnQKCk9iamV0IDogVHJhdmF1eCBkZSBncm9zIG9ldXZyZSAtIFJlc2lkZW5jZSBBbCBGYXJhaApNb250YW50IDogMiA1MDAgMDAwIE1BRCBIVApEdXJlZSA6IDggbW9pcwpEYXRlIGRlIGRlYnV0IDogMDEvMDEvMjAyNgo=</field>
+            <field name="notes">Contrat de sous-traitance pour la rÃ©alisation des travaux de gros Å“uvre du projet RÃ©sidence Al Farah Ã  Casablanca. Montant global : 2 500 000 MAD HT. DurÃ©e des travaux : 8 mois.</field>
+            <field name="file">Q09OVFJBVCBERSBTT1VTLVRSQUlUQU5DRQo9PT09PT09PT09PT09PT09PT09PQoKUGFydGllcyA6CiAtIEVudHJlcHJlbmV1ciBwcmluY2lwYWwgOiBDb25zdHJ1Y3Rpb24gU0FSTAogLSBTb3VzLXRyYWl0YW50IDogQWwgT21yYW5lIERldmVsb3BwZW1lbnQKCk9iamV0IDogVHJhdmF1eCBkZSBncm9zIG9ldXZyZSAtIFJlc2lkZW5jZSBBbCBGYXJhaApNb250YW50IDogMiA1MDAgMDAwIE1BRCBIVApEdXJlZSA6IDggbW9pcwpEYXRlIGRlIGRlYnV0IDogMDEvMDEvMjAyNgo=</field>
             <field name="file_name">contrat_sous_traitance_al_omrane.txt</field>
             <field name="tag_ids" eval="[(4, ref('tag_important'))]"/>
         </record>
 
         <!-- 2. Devis chantier -->
         <record id="demo_doc_devis_chantier" model="document.document">
-            <field name="name">Devis Chantier — Immeuble R+5 Hay Riad Rabat</field>
+            <field name="name">Devis Chantier â€” Immeuble R+5 Hay Riad Rabat</field>
             <field name="folder_id" ref="folder_general"/>
             <field name="document_type">report</field>
             <field name="state">validated</field>
             <field name="version">2</field>
-            <field name="notes">Devis détaillé pour la construction d'un immeuble R+5 à Hay Riad Rabat. Surface totale : 1 200 m². Coût estimatif : 4 800 000 MAD TTC. Ce document est la version finale approuvée par le maître d'ouvrage.</field>
-            <field name="file" type="base64">REVWSVMGQ0hBTlRJRVIgLSBJbW1ldWJsZSBSKzUgSGF5IFJpYWQgUmFiYXQKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgpDbGllbnQgOiBBZGRvaGEgR3JvdXBlClJlZmVyZW5jZSA6IERFVi0yMDI2LTAwMQpEYXRlIDogMjIvMDQvMjAyNgoKREVTQ1JJUFRJT04gREVTIFRSQVZBVVgKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoxLiBHcm9zIG9ldXZyZSA6IDEgODAwIDAwMCBNQUQKMi4gRXRhbmNoZWl0ZSA6IDI0MCAwMDAgTUFECjMuIFJldmV0ZW1lbnRzIDogNjAwIDAwMCBNQUQKNC4gUGxvbWJlcmllIDogMzYwIDAwMCBNQUQKNS4gRWxlY3RyaWNpdGUgOiA0OTIgMDAwIE1BRAo2LiBBbHVtaW5pdW0gOiAzMDAgMDAwIE1BRAo3LiBQZWludHVyZSA6IDIwOCAwMDAgTUFECgpUT1RBTCBIVCA6IDQgMDAwIDAwMCBNQUQKVFZBIDIwJSA6IDgwMCAwMDAgTUFEClRPVEFMIFRUQyA6IDQgODAwIDAwMCBNQUQK</field>
+            <field name="notes">Devis dÃ©taillÃ© pour la construction d'un immeuble R+5 Ã  Hay Riad Rabat. Surface totale : 1 200 mÂ². CoÃ»t estimatif : 4 800 000 MAD TTC. Ce document est la version finale approuvÃ©e par le maÃ®tre d'ouvrage.</field>
+            <field name="file">REVWSVMGQ0hBTlRJRVIgLSBJbW1ldWJsZSBSKzUgSGF5IFJpYWQgUmFiYXQKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgpDbGllbnQgOiBBZGRvaGEgR3JvdXBlClJlZmVyZW5jZSA6IERFVi0yMDI2LTAwMQpEYXRlIDogMjIvMDQvMjAyNgoKREVTQ1JJUFRJT04gREVTIFRSQVZBVVgKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoxLiBHcm9zIG9ldXZyZSA6IDEgODAwIDAwMCBNQUQKMi4gRXRhbmNoZWl0ZSA6IDI0MCAwMDAgTUFECjMuIFJldmV0ZW1lbnRzIDogNjAwIDAwMCBNQUQKNC4gUGxvbWJlcmllIDogMzYwIDAwMCBNQUQKNS4gRWxlY3RyaWNpdGUgOiA0OTIgMDAwIE1BRAo2LiBBbHVtaW5pdW0gOiAzMDAgMDAwIE1BRAo3LiBQZWludHVyZSA6IDIwOCAwMDAgTUFECgpUT1RBTCBIVCA6IDQgMDAwIDAwMCBNQUQKVFZBIDIwJSA6IDgwMCAwMDAgTUFEClRPVEFMIFRUQyA6IDQgODAwIDAwMCBNQUQK</field>
             <field name="file_name">devis_chantier_hay_riad_rabat.txt</field>
             <field name="tag_ids" eval="[(4, ref('tag_important')), (4, ref('tag_a_signer'))]"/>
         </record>
 
         <!-- 3. Facture fournisseur Holcim -->
         <record id="demo_doc_facture_holcim" model="document.document">
-            <field name="name">Facture Holcim Maroc — Ciment CPJ 45 — Avril 2026</field>
+            <field name="name">Facture Holcim Maroc â€” Ciment CPJ 45 â€” Avril 2026</field>
             <field name="folder_id" ref="folder_finance"/>
             <field name="document_type">invoice</field>
             <field name="state">validated</field>
             <field name="version">1</field>
-            <field name="notes">Facture d'achat de ciment CPJ 45 pour le chantier Hay Riad. Quantité : 500 sacs x 85 MAD = 42 500 MAD HT. TVA 20% : 8 500 MAD. Total TTC : 51 000 MAD.</field>
-            <field name="file" type="base64">RkFDVFVSRSBGT1VSTklTU0VVUgpIb2xjaW0gTWFyb2MgLSBSb3V0ZSBkZSBSYWJhdCBCUCAzOCwgU2V0dGF0Ck5VTUVSTyA6IEZBQy0yMDI2LTA0LTI4NzYKREFURSA6IDA1LzA0LzIwMjYKCkNMSUVOVCA6IENvbnN0cnVjdGlvbiBTQVJMCgpERVNJR05BVElPTiAgICAgICAgICAgUVRFICAgIFBVICAgICAgICAgIFRPVEFMHz09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KQ2ltZW50IENQSiA0NSAgICAgICAgNTAwIHNhY3MgIDg1IE1BTCAgNDIgNTAwIE1BRAoKU09VUy1UT1RBTCA6IDQyIDUwMCBNQUQKVFZBIDIwJSAgICAgOiAgOCA1MDAgTUFEClRPVEFMIFRUQyAgOiA1MSAwMDAgTUFECgpNT0RFIERFIFBBSUVNRU5UIDogVmlyZW1lbnQgMzAgam91cnMK</field>
+            <field name="notes">Facture d'achat de ciment CPJ 45 pour le chantier Hay Riad. QuantitÃ© : 500 sacs x 85 MAD = 42 500 MAD HT. TVA 20% : 8 500 MAD. Total TTC : 51 000 MAD.</field>
+            <field name="file">RkFDVFVSRSBGT1VSTklTU0VVUgpIb2xjaW0gTWFyb2MgLSBSb3V0ZSBkZSBSYWJhdCBCUCAzOCwgU2V0dGF0Ck5VTUVSTyA6IEZBQy0yMDI2LTA0LTI4NzYKREFURSA6IDA1LzA0LzIwMjYKCkNMSUVOVCA6IENvbnN0cnVjdGlvbiBTQVJMCgpERVNJR05BVElPTiAgICAgICAgICAgUVRFICAgIFBVICAgICAgICAgIFRPVEFMHz09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KQ2ltZW50IENQSiA0NSAgICAgICAgNTAwIHNhY3MgIDg1IE1BTCAgNDIgNTAwIE1BRAoKU09VUy1UT1RBTCA6IDQyIDUwMCBNQUQKVFZBIDIwJSAgICAgOiAgOCA1MDAgTUFEClRPVEFMIFRUQyAgOiA1MSAwMDAgTUFECgpNT0RFIERFIFBBSUVNRU5UIDogVmlyZW1lbnQgMzAgam91cnMK</field>
             <field name="file_name">facture_holcim_avril_2026.txt</field>
             <field name="tag_ids" eval="[(4, ref('tag_confidentiel'))]"/>
         </record>
 
-        <!-- 4. Attestation CNSS employé -->
+        <!-- 4. Attestation CNSS employÃ© -->
         <record id="demo_doc_cnss" model="document.document">
-            <field name="name">Attestation CNSS — Mohamed Alami — 2026</field>
+            <field name="name">Attestation CNSS â€” Mohamed Alami â€” 2026</field>
             <field name="folder_id" ref="folder_hr"/>
             <field name="document_type">certificate</field>
             <field name="state">validated</field>
             <field name="version">1</field>
             <field name="expiration_date">2026-12-31</field>
-            <field name="notes">Attestation d'affiliation CNSS et AMO pour l'employé Mohamed Alami. Numéro CNSS : 123456789. Attestation valide pour l'année 2026.</field>
-            <field name="file" type="base64">QVRURUVTVEFUSU9OIENHU1MKQ2Fpc3NlIE5hdGlvbmFsZSBkZSBTZWN1cml0ZSBTb2NpYWxlCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKQVRURVNUQVRJT04gRCdBRkZJTElBVElPTgoKTm9tIDogTW9oYW1lZCBBbGFtaQpEYXRlIGRlIG5haXNzYW5jZSA6IDE1LzAzLzE5ODUKQ0lOIDogQUIxMjM0NTYKQ0lOIENOU1MgOiAxMjM0NTY3ODkKRW1wbG95ZXVyIDogQ29uc3RydWN0aW9uIFNBUkwKCkNldHRlIGF0dGVzdGF0aW9uIGNlcnRpZmllIHF1ZSBsYSBwZXJzb25uZSBzdXNub21tZWUgZXN0IAphZmZpbGllZSBhIGxhIENOU1MgZXQgYW5lcmVncmlzdHJlZSBpbiBBTU8uCgpWYWxhYmxlIHBvdXIgbCdhbm5lZSAyMDI2LgpSYWJhdCwgbGUgMjIvMDQvMjAyNgo=</field>
+            <field name="notes">Attestation d'affiliation CNSS et AMO pour l'employÃ© Mohamed Alami. NumÃ©ro CNSS : 123456789. Attestation valide pour l'annÃ©e 2026.</field>
+            <field name="file">QVRURUVTVEFUSU9OIENHU1MKQ2Fpc3NlIE5hdGlvbmFsZSBkZSBTZWN1cml0ZSBTb2NpYWxlCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKQVRURVNUQVRJT04gRCdBRkZJTElBVElPTgoKTm9tIDogTW9oYW1lZCBBbGFtaQpEYXRlIGRlIG5haXNzYW5jZSA6IDE1LzAzLzE5ODUKQ0lOIDogQUIxMjM0NTYKQ0lOIENOU1MgOiAxMjM0NTY3ODkKRW1wbG95ZXVyIDogQ29uc3RydWN0aW9uIFNBUkwKCkNldHRlIGF0dGVzdGF0aW9uIGNlcnRpZmllIHF1ZSBsYSBwZXJzb25uZSBzdXNub21tZWUgZXN0IAphZmZpbGllZSBhIGxhIENOU1MgZXQgYW5lcmVncmlzdHJlZSBpbiBBTU8uCgpWYWxhYmxlIHBvdXIgbCdhbm5lZSAyMDI2LgpSYWJhdCwgbGUgMjIvMDQvMjAyNgo=</field>
             <field name="file_name">attestation_cnss_mohamed_alami_2026.txt</field>
             <field name="tag_ids" eval="[(4, ref('tag_important'))]"/>
         </record>
 
         <!-- 5. Registre de commerce -->
         <record id="demo_doc_rc" model="document.document">
-            <field name="name">Registre de Commerce — Construction SARL</field>
+            <field name="name">Registre de Commerce â€” Construction SARL</field>
             <field name="folder_id" ref="folder_legal"/>
             <field name="document_type">certificate</field>
             <field name="state">validated</field>
             <field name="version">1</field>
             <field name="expiration_date">2027-06-30</field>
-            <field name="notes">Extrait du Registre de Commerce de la société Construction SARL. Tribunal de Commerce de Casablanca. Numéro RC : 123456. Date de création : 01/01/2020.</field>
-            <field name="file" type="base64">UkVHSVNUUkUgREUgQ09NTUVSQ0UKVHJpYnVuYWwgZGUgQ29tbWVyY2UgZGUgQ2FzYWJsYW5jYQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKRVhUUkFJVCBEVSBSRUdJU1RSRSBERSBDT01NRVJDRQoKUmFpc29uIHNvY2lhbGUgIDogQ29uc3RydWN0aW9uIFNBUkwKRm9ybWUganVyaWRpcXVlIDogU0FSTApOdW1lcm8gUkMgICAgICAgOiAxMjM0NTYKSUZGICAgICAgICAgICAgIDogMzMzNDQ0NTU1ClRQICAgICAgICAgICAgICA6IDEyMzQ1NjcKSUNFICAgICAgICAgICAgIDogMDAxMjM0NTY3ODkwMAppREFURSBDUkVBVElPTiAgOiAwMS8wMS8yMDIwCkFkZHJlc3NlICAgICAgICA6IEJkIFplcmt0b3VuaSwgSW1tLiBBbCBGYXRoLCBDYXNhYmxhbmNhCgpWYWxhYmxlIGp1c3F1J2F1IDMwLzA2LzIwMjcK</field>
+            <field name="notes">Extrait du Registre de Commerce de la sociÃ©tÃ© Construction SARL. Tribunal de Commerce de Casablanca. NumÃ©ro RC : 123456. Date de crÃ©ation : 01/01/2020.</field>
+            <field name="file">UkVHSVNUUkUgREUgQ09NTUVSQ0UKVHJpYnVuYWwgZGUgQ29tbWVyY2UgZGUgQ2FzYWJsYW5jYQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKRVhUUkFJVCBEVSBSRUdJU1RSRSBERSBDT01NRVJDRQoKUmFpc29uIHNvY2lhbGUgIDogQ29uc3RydWN0aW9uIFNBUkwKRm9ybWUganVyaWRpcXVlIDogU0FSTApOdW1lcm8gUkMgICAgICAgOiAxMjM0NTYKSUZGICAgICAgICAgICAgIDogMzMzNDQ0NTU1ClRQICAgICAgICAgICAgICA6IDEyMzQ1NjcKSUNFICAgICAgICAgICAgIDogMDAxMjM0NTY3ODkwMAppREFURSBDUkVBVElPTiAgOiAwMS8wMS8yMDIwCkFkZHJlc3NlICAgICAgICA6IEJkIFplcmt0b3VuaSwgSW1tLiBBbCBGYXRoLCBDYXNhYmxhbmNhCgpWYWxhYmxlIGp1c3F1J2F1IDMwLzA2LzIwMjcK</field>
             <field name="file_name">registre_commerce_construction_sarl.txt</field>
             <field name="tag_ids" eval="[(4, ref('tag_confidentiel'))]"/>
         </record>
 
-        <!-- 6. Procédure sécurité chantier -->
+        <!-- 6. ProcÃ©dure sÃ©curitÃ© chantier -->
         <record id="demo_doc_securite" model="document.document">
-            <field name="name">Procédure Sécurité Chantier — Plan HSE 2026</field>
+            <field name="name">ProcÃ©dure SÃ©curitÃ© Chantier â€” Plan HSE 2026</field>
             <field name="folder_id" ref="folder_general"/>
             <field name="document_type">procedure</field>
             <field name="state">validated</field>
             <field name="version">3</field>
-            <field name="notes">Plan Hygiène Sécurité Environnement pour les chantiers. Obligations légales : port des EPI, formation des ouvriers, registre des accidents. Mis à jour en avril 2026 selon les normes ONHYM et Code du Travail marocain.</field>
-            <field name="file" type="base64">UFJPQ0VEVVJFIFNFQ1VSSVRTIE9VVFJJRVIgLSBQTEFOIEhTRSAyMDI2CkNvbnN0cnVjdGlvbiBTQVJMCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgoxLiBFUVVJUEVNRU5UUyBERSBQUk9URUNUSU9OIElORElWSURVRUxMRSAoRVBJKQogICAtIENhc3F1ZSBkZSBzZWN1cml0ZSBvYmxpZ2F0b2lyZQogICAtIENob3Vzc3VyZXMgZGUgc2VjdXJpdGUgYXZlYyBiaW91dHMgbWV0YWxvcXVlcwogICAtIEdpbGV0IHJlZmxlY2hpc3NhbnQKICAgLSBMdW5ldHRlcyBkZSBwcm90ZWN0aW9uCgoyLiBGT1JNQVRJT04gT0JMSUdBVE9JUkUKICAgLSBGb3JtYXRpb24gaW5pdGlhbGUgOiA4IGhldXJlcwogICAtIFJlY3ljbGFnZSBhbm51ZWwgOiA0IGhldXJlcwoKMy4gUkVHSVNUUkUgREVTIEFDQ0lERU5UUwogICAtIFRvdXQgYWNjaWRlbnQgZG9pdCBldHJlIGRlY2xhcmUgYSBsYSBDTlNTIGRhbnMgNDhoIAoKVmVyc2lvbiAzIC0gQXZyaWwgMjAyNgo=</field>
+            <field name="notes">Plan HygiÃ¨ne SÃ©curitÃ© Environnement pour les chantiers. Obligations lÃ©gales : port des EPI, formation des ouvriers, registre des accidents. Mis Ã  jour en avril 2026 selon les normes ONHYM et Code du Travail marocain.</field>
+            <field name="file">UFJPQ0VEVVJFIFNFQ1VSSVRTIE9VVFJJRVIgLSBQTEFOIEhTRSAyMDI2CkNvbnN0cnVjdGlvbiBTQVJMCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgoxLiBFUVVJUEVNRU5UUyBERSBQUk9URUNUSU9OIElORElWSURVRUxMRSAoRVBJKQogICAtIENhc3F1ZSBkZSBzZWN1cml0ZSBvYmxpZ2F0b2lyZQogICAtIENob3Vzc3VyZXMgZGUgc2VjdXJpdGUgYXZlYyBiaW91dHMgbWV0YWxvcXVlcwogICAtIEdpbGV0IHJlZmxlY2hpc3NhbnQKICAgLSBMdW5ldHRlcyBkZSBwcm90ZWN0aW9uCgoyLiBGT1JNQVRJT04gT0JMSUdBVE9JUkUKICAgLSBGb3JtYXRpb24gaW5pdGlhbGUgOiA4IGhldXJlcwogICAtIFJlY3ljbGFnZSBhbm51ZWwgOiA0IGhldXJlcwoKMy4gUkVHSVNUUkUgREVTIEFDQ0lERU5UUwogICAtIFRvdXQgYWNjaWRlbnQgZG9pdCBldHJlIGRlY2xhcmUgYSBsYSBDTlNTIGRhbnMgNDhoIAoKVmVyc2lvbiAzIC0gQXZyaWwgMjAyNgo=</field>
             <field name="file_name">plan_hse_chantier_2026.txt</field>
         </record>
 
