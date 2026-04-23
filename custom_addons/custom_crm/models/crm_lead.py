@@ -84,11 +84,86 @@ class CrmLead(models.Model):
         string='Notes internes CRM',
     )
 
+    # --- Champs BTP ---
+    btp_project_type = fields.Selection([
+        ('renovation', 'Rénovation'),
+        ('neuf', 'Construction neuve'),
+        ('extension', 'Extension'),
+        ('vrd', 'VRD (Voirie / Réseaux)'),
+        ('second_oeuvre', 'Second œuvre'),
+        ('autre', 'Autre'),
+    ], string='Type de projet', tracking=True)
+
+    btp_client_budget = fields.Float(
+        string='Budget estimé client (DH)',
+        digits=(15, 2),
+        tracking=True,
+    )
+
+    btp_surface = fields.Float(
+        string='Surface (m²)',
+        digits=(10, 2),
+    )
+
+    btp_site_address = fields.Text(
+        string='Adresse du chantier',
+    )
+
+    btp_site_city = fields.Char(
+        string='Ville du chantier',
+        tracking=True,
+    )
+
+    btp_start_date = fields.Date(
+        string='Date de début souhaitée',
+    )
+
+    btp_visit_date = fields.Date(
+        string='Date de visite sur site',
+        tracking=True,
+    )
+
+    btp_visit_done = fields.Boolean(
+        string='Visite effectuée',
+        compute='_compute_btp_visit_done',
+        store=True,
+        readonly=False,
+        tracking=True,
+    )
+
+    btp_loss_reason = fields.Selection([
+        ('prix', 'Prix trop élevé'),
+        ('delais', 'Délais trop longs'),
+        ('concurrent', 'Concurrent moins cher'),
+        ('technique', 'Problème technique'),
+        ('annule', 'Client annulé'),
+        ('autre', 'Autre'),
+    ], string='Motif de perte', tracking=True)
+
+    btp_is_lost_stage = fields.Boolean(
+        string='Étape Perdu',
+        compute='_compute_btp_is_lost_stage',
+    )
+
     # --- Calculs ---
     @api.depends('expected_revenue', 'probability')
     def _compute_conversion_rate(self):
         for lead in self:
             lead.conversion_rate = (lead.expected_revenue or 0) * (lead.probability or 0) / 100
+
+    @api.depends('btp_visit_date')
+    def _compute_btp_visit_done(self):
+        today = fields.Date.today()
+        for lead in self:
+            if lead.btp_visit_date:
+                lead.btp_visit_done = lead.btp_visit_date <= today
+            elif not lead.btp_visit_date:
+                lead.btp_visit_done = False
+
+    @api.depends('stage_id')
+    def _compute_btp_is_lost_stage(self):
+        for lead in self:
+            lead.btp_is_lost_stage = bool(lead.stage_id and lead.stage_id.fold)
 
     @api.depends('probability')
     def _compute_lead_quality(self):
@@ -243,6 +318,55 @@ class CrmLead(models.Model):
             'target': 'new',
         }
 
+    # --- Actions BTP ---
+    def action_schedule_site_visit(self):
+        """Planifier une visite sur chantier"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Planifier visite chantier'),
+            'res_model': 'calendar.event',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_opportunity_id': self.id,
+                'default_partner_ids': [(4, self.partner_id.id)] if self.partner_id else [],
+                'default_name': _('Visite chantier – %s') % self.name,
+                'default_description': self.btp_site_address or '',
+            },
+        }
+
+    def action_mark_visit_done(self):
+        """Marquer la visite sur site comme effectuée (et avancer l'étape si besoin)"""
+        for lead in self:
+            vals = {'btp_visit_done': True}
+            if not lead.btp_visit_date:
+                vals['btp_visit_date'] = fields.Date.today()
+            # Avancer automatiquement vers « Visite effectuée » si on est à « Visite programmée »
+            if lead.stage_id and lead.stage_id.sequence == 30:
+                next_stage = self.env['crm.stage'].search(
+                    [('sequence', '=', 40)], limit=1
+                )
+                if next_stage:
+                    vals['stage_id'] = next_stage.id
+            lead.write(vals)
+        return True
+
+    def action_open_btp_lost_wizard(self):
+        """Ouvrir le dialogue de perte BTP"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Marquer comme perdu'),
+            'res_model': 'crm.lead.btp.lost.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_lead_id': self.id,
+                'default_btp_loss_reason': self.btp_loss_reason or 'autre',
+            },
+        }
+
 
 class CrmCompetitor(models.Model):
     _name = 'crm.competitor'
@@ -254,3 +378,31 @@ class CrmCompetitor(models.Model):
     strength = fields.Text(string='Points forts')
     weakness = fields.Text(string='Points faibles')
     active = fields.Boolean(default=True)
+
+
+class CrmLeadBtpLostWizard(models.TransientModel):
+    _name = 'crm.lead.btp.lost.wizard'
+    _description = 'Wizard – Motif de perte BTP'
+
+    lead_id = fields.Many2one('crm.lead', string='Opportunité', required=True, ondelete='cascade')
+    btp_loss_reason = fields.Selection([
+        ('prix', 'Prix trop élevé'),
+        ('delais', 'Délais trop longs'),
+        ('concurrent', 'Concurrent moins cher'),
+        ('technique', 'Problème technique'),
+        ('annule', 'Client annulé'),
+        ('autre', 'Autre'),
+    ], string='Motif de perte', required=True, default='autre')
+
+    def action_confirm_lost(self):
+        """Confirmer la perte : déplacer l'opportunité vers l'étape Perdu."""
+        self.ensure_one()
+        perdu_stage = self.env['crm.stage'].search([('name', '=', 'Perdu')], limit=1)
+        vals = {
+            'btp_loss_reason': self.btp_loss_reason,
+            'probability': 0,
+        }
+        if perdu_stage:
+            vals['stage_id'] = perdu_stage.id
+        self.lead_id.write(vals)
+        return {'type': 'ir.actions.act_window_close'}

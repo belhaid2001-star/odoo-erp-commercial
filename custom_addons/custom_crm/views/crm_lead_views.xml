@@ -9,14 +9,22 @@
             <!-- Boutons d'action -->
             <xpath expr="//header" position="inside">
                 <button name="action_log_call"
-                        string="📞 Enregistrer appel"
+                        string="&#128222; Enregistrer appel"
                         type="object" class="btn-secondary"/>
                 <button name="action_call_partner"
                         string="Téléphoner"
                         type="object" class="btn-secondary"/>
                 <button name="action_schedule_meeting"
-                        string="📅 Planifier RDV"
+                        string="&#128197; Planifier RDV"
                         type="object" class="btn-secondary"/>
+                <button name="action_schedule_site_visit"
+                        string="&#127959;&#65039; Visite site"
+                        type="object" class="btn-secondary"
+                        invisible="type != 'opportunity'"/>
+                <button name="action_mark_visit_done"
+                        string="&#9989; Visite effectuée"
+                        type="object" class="btn-secondary"
+                        invisible="btp_visit_done or type != 'opportunity'"/>
                 <button name="action_open_gmail_compose"
                         string="Gmail"
                         type="object" class="btn-secondary"/>
@@ -24,8 +32,12 @@
                         string="WhatsApp"
                         type="object" class="btn-secondary"/>
                 <button name="action_quick_quotation"
-                        string="📋 Devis rapide"
+                        string="&#128203; Devis rapide"
                         type="object" class="btn-primary"
+                        invisible="type != 'opportunity'"/>
+                <button name="action_open_btp_lost_wizard"
+                        string="&#10060; Perdu"
+                        type="object" class="btn-danger"
                         invisible="type != 'opportunity'"/>
             </xpath>
 
@@ -98,6 +110,46 @@
                            help="Notes internes visibles uniquement par l'équipe commerciale"/>
                 </page>
             </xpath>
+
+            <!-- Onglet Fiche BTP -->
+            <xpath expr="//notebook/page[@name='commercial_tracking']" position="before">
+                <page string="&#127959;&#65039; Fiche BTP" name="btp_details">
+                    <field name="btp_is_lost_stage" invisible="1"/>
+                    <group>
+                        <group string="&#127959;&#65039; Projet">
+                            <field name="btp_project_type"
+                                   help="Type de travaux pour ce chantier"/>
+                            <field name="btp_surface"
+                                   help="Surface en m² du chantier"/>
+                            <field name="btp_client_budget"
+                                   help="Budget estimatif communiqué par le client"/>
+                            <field name="btp_start_date"
+                                   help="Date de début souhaitée par le client"/>
+                        </group>
+                        <group string="&#128205; Localisation">
+                            <field name="btp_site_city"
+                                   help="Ville ou commune du chantier"/>
+                            <field name="btp_site_address"
+                                   widget="text"
+                                   placeholder="Adresse complète du chantier (rue, localité...)"
+                                   help="Adresse du chantier – peut différer de l'adresse du client"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="&#128197; Visite sur site">
+                            <field name="btp_visit_date"
+                                   help="Date de la visite sur site programmée ou réalisée"/>
+                            <field name="btp_visit_done"
+                                   help="Cochez après la visite – rempli automatiquement si la date est passée"/>
+                        </group>
+                        <group string="&#10060; Perte">
+                            <field name="btp_loss_reason"
+                                   invisible="not btp_is_lost_stage"
+                                   help="Motif principal de la perte de ce chantier"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 
@@ -113,6 +165,10 @@
                        decoration-warning="lead_quality == 'warm'"
                        decoration-success="lead_quality == 'hot'"/>
                 <field name="lead_source" optional="show" string="Source"/>
+                <field name="btp_project_type" optional="show" string="Type projet"/>
+                <field name="btp_site_city" optional="show" string="Ville chantier"/>
+                <field name="btp_visit_date" optional="show" string="Date visite"/>
+                <field name="btp_visit_done" optional="show" string="Visite OK"/>
                 <field name="estimated_closing_date" optional="hide" string="Clôture prévue"/>
                 <field name="call_count" optional="hide" string="Appels"/>
             </xpath>
@@ -125,10 +181,129 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
         <field name="arch" type="xml">
+            <!-- Charger les champs BTP dans le kanban -->
             <xpath expr="//field[@name='expected_revenue']" position="after">
                 <field name="lead_quality"/>
                 <field name="lead_source"/>
+                <field name="btp_project_type"/>
+                <field name="btp_surface"/>
+                <field name="btp_site_city"/>
+                <field name="btp_visit_date"/>
+                <field name="btp_visit_done"/>
+            </xpath>
+            <!-- Afficher les infos BTP et actions rapides dans la carte -->
+            <xpath expr="//t[@t-name='card']" position="inside">
+                <div class="mt-1 pt-1 border-top small text-muted"
+                     t-if="record.btp_project_type.raw_value or record.btp_site_city.raw_value or record.btp_visit_date.value">
+                    <t t-if="record.btp_project_type.raw_value">
+                        <div>
+                            <span>&#127959;&#65039; <t t-esc="record.btp_project_type.value"/><t t-if="record.btp_surface.raw_value"> · <t t-esc="record.btp_surface.raw_value"/> m²</t></span>
+                        </div>
+                    </t>
+                    <t t-if="record.btp_site_city.raw_value">
+                        <div>&#128205; <t t-esc="record.btp_site_city.value"/></div>
+                    </t>
+                    <t t-if="record.btp_visit_date.value">
+                        <div>&#128197; Visite : <t t-esc="record.btp_visit_date.value"/></div>
+                    </t>
+                    <div class="mt-1">
+                        <span class="badge text-bg-danger" t-if="record.lead_quality.raw_value == 'hot'">&#128293; Chaud (<t t-esc="record.probability.value"/>%)</span>
+                        <span class="badge text-bg-warning" t-elif="record.lead_quality.raw_value == 'warm'">&#127777;&#65039; Tiède (<t t-esc="record.probability.value"/>%)</span>
+                        <span class="badge text-bg-secondary" t-else="">&#10052;&#65039; Froid (<t t-esc="record.probability.value"/>%)</span>
+                    </div>
+                </div>
+                <!-- Actions rapides BTP -->
+                <div class="d-flex gap-1 mt-1" t-if="record.type.raw_value == 'opportunity'">
+                    <button name="action_schedule_site_visit" type="object"
+                            class="btn btn-sm btn-outline-secondary"
+                            t-if="not record.btp_visit_done.raw_value"
+                            title="Planifier visite chantier">&#128197;</button>
+                    <button name="action_mark_visit_done" type="object"
+                            class="btn btn-sm btn-outline-success"
+                            t-if="not record.btp_visit_done.raw_value"
+                            title="Visite effectuée">&#9989;</button>
+                    <button name="action_quick_quotation" type="object"
+                            class="btn btn-sm btn-outline-primary"
+                            title="Créer un devis">&#128203;</button>
+                    <button name="action_open_btp_lost_wizard" type="object"
+                            class="btn btn-sm btn-outline-danger"
+                            title="Marquer comme perdu">&#10060;</button>
+                </div>
             </xpath>
         </field>
     </record>
+
+    <!-- Extension vue recherche – filtres BTP -->
+    <record id="view_crm_lead_search_btp" model="ir.ui.view">
+        <field name="name">crm.lead.search.btp</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <!-- Filtres par type de projet -->
+                <filter string="&#127959;&#65039; Rénovation" name="filter_renovation"
+                        domain="[('btp_project_type','=','renovation')]"/>
+                <filter string="&#127959;&#65039; Construction neuve" name="filter_neuf"
+                        domain="[('btp_project_type','=','neuf')]"/>
+                <filter string="&#127959;&#65039; Extension" name="filter_extension"
+                        domain="[('btp_project_type','=','extension')]"/>
+                <filter string="&#127959;&#65039; VRD" name="filter_vrd"
+                        domain="[('btp_project_type','=','vrd')]"/>
+                <filter string="&#127959;&#65039; Second œuvre" name="filter_second_oeuvre"
+                        domain="[('btp_project_type','=','second_oeuvre')]"/>
+                <separator/>
+                <!-- Filtres par état de la visite -->
+                <filter string="&#128197; Visite à faire" name="filter_visite_a_faire"
+                        domain="[('btp_visit_date','!=',False),('btp_visit_done','=',False)]"/>
+                <filter string="&#9989; Visite effectuée" name="filter_visite_effectuee"
+                        domain="[('btp_visit_done','=',True)]"/>
+                <filter string="&#9888;&#65039; Visite dépassée" name="filter_visite_depassee"
+                        domain="[('btp_visit_date','&lt;',context_today().strftime('%Y-%m-%d')),('btp_visit_done','=',False)]"/>
+                <separator/>
+                <!-- Filtres par avancée commerciale -->
+                <filter string="&#128203; Devis envoyé" name="filter_devis_envoye"
+                        domain="[('stage_id.name','=','Devis envoyé')]"/>
+                <filter string="&#128293; Chaud (≥ 50 %)" name="filter_chaud"
+                        domain="[('probability','&gt;=',50)]"/>
+                <!-- Regroupements BTP -->
+                <group expand="0" string="Regrouper par BTP">
+                    <filter string="Type de projet" name="groupby_project_type"
+                            context="{'group_by': 'btp_project_type'}"/>
+                    <filter string="Ville du chantier" name="groupby_city"
+                            context="{'group_by': 'btp_site_city'}"/>
+                    <filter string="Qualité / Température" name="groupby_quality"
+                            context="{'group_by': 'lead_quality'}"/>
+                    <filter string="Commercial" name="groupby_user"
+                            context="{'group_by': 'user_id'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue formulaire – Wizard de perte BTP -->
+    <record id="view_crm_lead_btp_lost_wizard_form" model="ir.ui.view">
+        <field name="name">crm.lead.btp.lost.wizard.form</field>
+        <field name="model">crm.lead.btp.lost.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Marquer comme perdu">
+                <sheet>
+                    <group>
+                        <field name="lead_id" readonly="1"/>
+                        <field name="btp_loss_reason" required="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_confirm_lost"
+                            string="Confirmer la perte"
+                            type="object"
+                            class="btn-danger"/>
+                    <button string="Annuler"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
 </odoo>

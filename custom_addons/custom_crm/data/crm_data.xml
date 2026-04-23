@@ -1,17 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
-        <!-- Étapes du pipeline par défaut personnalisées -->
+    <!-- ================================================================ -->
+    <!-- Étapes du pipeline BTP – noupdate="0" pour mise à jour           -->
+    <!-- ================================================================ -->
+    <data noupdate="0">
         <record id="stage_qualification" model="crm.stage">
-            <field name="name">Qualification</field>
-            <field name="sequence">5</field>
+            <field name="name">Nouvelle demande</field>
+            <field name="sequence">10</field>
+            <field name="is_won" eval="False"/>
+            <field name="fold" eval="False"/>
+        </record>
+
+        <record id="stage_qualifie" model="crm.stage">
+            <field name="name">Qualifié</field>
+            <field name="sequence">20</field>
+            <field name="is_won" eval="False"/>
+            <field name="fold" eval="False"/>
+        </record>
+
+        <record id="stage_visite_programmee" model="crm.stage">
+            <field name="name">Visite programmée</field>
+            <field name="sequence">30</field>
+            <field name="is_won" eval="False"/>
+            <field name="fold" eval="False"/>
+        </record>
+
+        <record id="stage_visite_effectuee" model="crm.stage">
+            <field name="name">Visite effectuée</field>
+            <field name="sequence">40</field>
+            <field name="is_won" eval="False"/>
+            <field name="fold" eval="False"/>
+        </record>
+
+        <record id="stage_devis_envoye" model="crm.stage">
+            <field name="name">Devis envoyé</field>
+            <field name="sequence">50</field>
+            <field name="is_won" eval="False"/>
+            <field name="fold" eval="False"/>
         </record>
 
         <record id="stage_negociation" model="crm.stage">
             <field name="name">Négociation</field>
-            <field name="sequence">25</field>
+            <field name="sequence">60</field>
+            <field name="is_won" eval="False"/>
+            <field name="fold" eval="False"/>
         </record>
 
+        <record id="stage_gagne" model="crm.stage">
+            <field name="name">Gagné</field>
+            <field name="sequence">70</field>
+            <field name="is_won" eval="True"/>
+            <field name="fold" eval="False"/>
+        </record>
+
+        <record id="stage_perdu" model="crm.stage">
+            <field name="name">Perdu</field>
+            <field name="sequence">80</field>
+            <field name="is_won" eval="False"/>
+            <field name="fold" eval="True"/>
+        </record>
+
+        <!-- Motifs de perte BTP -->
+        <record id="crm_lost_reason_prix" model="crm.lost.reason">
+            <field name="name">Prix trop élevé</field>
+        </record>
+        <record id="crm_lost_reason_delais" model="crm.lost.reason">
+            <field name="name">Délais trop longs</field>
+        </record>
+        <record id="crm_lost_reason_concurrent" model="crm.lost.reason">
+            <field name="name">Concurrent moins cher</field>
+        </record>
+        <record id="crm_lost_reason_technique" model="crm.lost.reason">
+            <field name="name">Problème technique</field>
+        </record>
+        <record id="crm_lost_reason_annule" model="crm.lost.reason">
+            <field name="name">Client annulé</field>
+        </record>
+        <record id="crm_lost_reason_autre" model="crm.lost.reason">
+            <field name="name">Autre motif BTP</field>
+        </record>
+    </data>
+
+    <data noupdate="1">
         <!-- ============================================================ -->
         <!-- Type d'activité : WhatsApp                                    -->
         <!-- ============================================================ -->
