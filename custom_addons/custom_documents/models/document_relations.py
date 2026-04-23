@@ -75,12 +75,18 @@ class PurchaseOrderDocuments(models.Model):
 class AccountMoveDocuments(models.Model):
     _inherit = 'account.move'
 
-    ged_document_ids = fields.Many2many(
+    ged_document_ids = fields.One2many(
+        'document.document', 'invoice_id',
+        string='Documents GED',
+    )
+    # Champ Many2many séparé pour lier des documents GED existants
+    ged_linked_docs = fields.Many2many(
         'document.document',
-        'account_move_ged_doc_rel',
+        'account_move_linked_doc_rel',
         'move_id',
         'doc_id',
-        string='Documents GED',
+        string='Documents liés (GED)',
+        help='Sélectionnez des documents existants de la GED à associer à cette écriture.',
     )
     ged_document_count = fields.Integer(
         string='Documents GED',
@@ -89,17 +95,19 @@ class AccountMoveDocuments(models.Model):
 
     def _compute_ged_invoice_count(self):
         for rec in self:
-            rec.ged_document_count = len(rec.ged_document_ids)
+            rec.ged_document_count = len(rec.ged_document_ids) + len(rec.ged_linked_docs)
 
     def action_view_ged_documents(self):
         self.ensure_one()
+        all_ids = self.ged_document_ids.ids + self.ged_linked_docs.ids
         return {
             'type': 'ir.actions.act_window',
             'name': _('Documents — %s') % self.name,
             'res_model': 'document.document',
             'view_mode': 'list,kanban,form',
-            'domain': [('id', 'in', self.ged_document_ids.ids)],
+            'domain': [('id', 'in', all_ids)],
             'context': {
+                'default_invoice_id': self.id,
                 'default_name': self.name,
             },
         }

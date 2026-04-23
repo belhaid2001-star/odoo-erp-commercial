@@ -113,11 +113,12 @@
             <xpath expr="//notebook" position="inside">
                 <page string="📂 Documents GED" name="ged_documents_accounting">
                     <div class="alert alert-info" role="alert" style="margin-bottom:8px;">
-                        <i class="fa fa-folder-open"/> Liez des documents existants de la GED à cette écriture, ou créez-en de nouveaux directement.
-                        Retrouvez tous les documents dans <strong>Documents → GED</strong>.
+                        <i class="fa fa-folder-open"/>
+                        <strong>Documents utiles pour le patron :</strong>
+                        Liez ici les documents de la GED relatifs à cette écriture :
+                        contrat signé, bon de commande, bon de livraison, attestation, facture fournisseur...
                     </div>
-                    <field name="ged_document_ids" nolabel="1"
-                           options="{'no_create': False}">
+                    <field name="ged_linked_docs" nolabel="1">
                         <tree>
                             <field name="name"/>
                             <field name="folder_id"/>
@@ -125,9 +126,8 @@
                             <field name="state" widget="badge"
                                    decoration-success="state == 'validated'"
                                    decoration-warning="state == 'draft'"
-                                   decoration-muted="state == 'archived'"/>
+                                   decoration-danger="state == 'archived'"/>
                             <field name="expiration_date"/>
-                            <field name="responsible_id" widget="many2one_avatar_user"/>
                         </tree>
                     </field>
                 </page>
