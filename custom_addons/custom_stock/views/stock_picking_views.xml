@@ -124,7 +124,7 @@
                        string="Qualité"
                        decoration-success="quality_status == 'passed'"
                        decoration-danger="quality_status == 'failed'"/>
-                <field name="carrier_tracking" optional="hide" string="Tracking"/>
+                <field name="carrier_tracking" optional="hide" string="Suivi livraison"/>
             </xpath>
         </field>
     </record>

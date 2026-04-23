@@ -91,7 +91,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Planning" name="planning">
+                        <page string="Planification" name="planning">
                             <group>
                                 <group string="Prévisionnel">
                                     <field name="date_debut_prev"/>

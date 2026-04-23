@@ -108,6 +108,52 @@ Module de comptabilité et facturation avancée qui étend le module standard Od
 - Menu dédié sous Comptabilité > Analytique > Étiquettes analytiques
 - Utilisables dans les factures via widget many2many_tags avec couleurs
 
+### 2.5. Pièces justificatives sur factures
+
+Onglet **📎 Documents** dans chaque facture pour joindre des pièces justificatives (PDF, images, etc.) :
+
+- **Champ** : `doc_attachment_ids` (Many2many → `ir.attachment`)
+- **Widget** : `many2many_binary` (glisser-déposer de fichiers)
+- **Table de relation** : `account_move_doc_attachment_rel`
+- Indépendant des pièces jointes techniques d'Odoo (`attachment_ids`)
+
+### 2.6. Lien GED Documents
+
+Onglet **📂 Documents GED** dans chaque facture pour lier des documents de la GED :
+
+- **Champ** : `ged_linked_docs` (Many2many → `document.document`)
+- **Table de relation** : `account_move_linked_doc_rel`
+- Affiche : Nom, Dossier, Type, État (brouillon/validé/archivé)
+- Smart button avec compteur total (documents créés + liés)
+
+### 2.7. Suivi des paiements (account.payment.tracking)
+
+Modèle de traçabilité des échéances et flux de trésorerie.
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `name` | Char | Référence (auto-séquence) |
+| `partner_id` | Many2one | Client/Fournisseur (requis) |
+| `partner_type` | Selection | `client` / `fournisseur` |
+| `state` | Selection | `en_attente` / `validé` / `rejeté` |
+
+### 2.8. Exercices Fiscaux (account.fiscal.year.custom)
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `name` | Char | Libellé de l'exercice (requis) |
+| `date_from` / `date_to` | Date | Période |
+| `state` | Selection | `ouvert` / `clôturé` |
+
+### 2.9. Vues Stock-Comptabilité
+
+Intégration du module stock dans la comptabilité :
+- **Valorisation d'inventaire** : vue mouvements par produit/catégorie
+- **Entrées/Sorties de stock** : mouvements d'inventaire valorisés
+- **Produits sous le seuil** : alertes stock minimum
+- **Écritures par produit** : journal des écritures liées aux mouvements de stock
+- **Réconciliation stock/compta** : rapprochement stock/comptabilité
+
 ---
 
 ## 3. Modèles de données
@@ -117,24 +163,43 @@ Module de comptabilité et facturation avancée qui étend le module standard Od
 | `account.move` | Extension des pièces comptables/factures | Héritage (_inherit) |
 | `account.cheque` | Gestion complète des chèques | Nouveau modèle |
 | `account.analytic.tag.custom` | Étiquettes analytiques personnalisées | Nouveau modèle |
+| `account.payment.tracking` | Suivi des paiements et échéances | Nouveau modèle |
+| `account.fiscal.year.custom` | Exercices fiscaux personnalisés | Nouveau modèle |
 
 ---
 
-## 4. Sécurité / Droits d'accès
+## 4. Onglets du Formulaire Facture
+
+| Onglet | Contenu |
+|--------|---------|
+| Suivi & Relances | Bouton relance, jours retard, niveau risque |
+| Chèques | Liste inline des chèques liés |
+| Analytique | Étiquettes analytiques |
+| Stock/Inventaire | Bons de livraison/réceptions liés |
+| 📎 Documents | Pièces justificatives (upload fichiers) |
+| 📂 Documents GED | Lien vers documents GED existants |
+
+---
+
+## 5. Sécurité / Droits d'accès
 
 - `account.cheque` : accès CRUD pour account_user
 - `account.analytic.tag.custom` : accès CRUD pour account_user
+- `account.payment.tracking` : accès CRUD pour account_user
+- `account.fiscal.year.custom` : accès CRUD pour account_manager
 - Bouton de validation réservé au groupe `account.group_account_manager`
 
 ---
 
-## 5. Automatisations
+## 6. Automatisations
 
 - **CRON relances** : envoi hebdomadaire automatique de relances pour toutes les factures en retard
 - **Calcul automatique** des jours de retard et du niveau de risque à chaque modification
 
 ---
 
-## 6. Rapports
+## 7. Rapports
 
 - **Impression de chèque** : rapport QWeb PDF pour les chèques émis, prêt à l'impression physique
+- **Balance âgée client** : créances classées par ancienneté (current, 30j, 60j, 90j+)
+- **Grand livre** : rapport comptable standard avec filtres analytiques
