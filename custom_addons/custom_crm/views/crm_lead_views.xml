@@ -181,10 +181,8 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
         <field name="arch" type="xml">
-            <!-- Charger les champs BTP dans le kanban (avant les templates pour garantir le chargement comme data) -->
+            <!-- Charger les champs BTP dans le kanban -->
             <xpath expr="//templates" position="before">
-                <field name="lead_quality"/>
-                <field name="lead_source"/>
                 <field name="btp_project_type"/>
                 <field name="btp_surface"/>
                 <field name="btp_site_city"/>
@@ -207,8 +205,8 @@
                         <div>&#128197; Visite : <t t-esc="record.btp_visit_date.value"/></div>
                     </t>
                     <div class="mt-1">
-                        <span class="badge text-bg-danger" t-if="record.lead_quality.raw_value == 'hot'">&#128293; Chaud (<t t-esc="record.probability.value"/>%)</span>
-                        <span class="badge text-bg-warning" t-elif="record.lead_quality.raw_value == 'warm'">&#127777;&#65039; Tiède (<t t-esc="record.probability.value"/>%)</span>
+                        <span class="badge text-bg-danger" t-if="record.probability.raw_value >= 70">&#128293; Chaud (<t t-esc="record.probability.value"/>%)</span>
+                        <span class="badge text-bg-warning" t-elif="record.probability.raw_value >= 40">&#127777;&#65039; Ti&#232;de (<t t-esc="record.probability.value"/>%)</span>
                         <span class="badge text-bg-secondary" t-else="">&#10052;&#65039; Froid (<t t-esc="record.probability.value"/>%)</span>
                     </div>
                 </div>
