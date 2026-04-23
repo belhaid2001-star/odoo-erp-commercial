@@ -237,7 +237,7 @@
     <record id="view_crm_lead_search_btp" model="ir.ui.view">
         <field name="name">crm.lead.search.btp</field>
         <field name="model">crm.lead</field>
-        <field name="inherit_id" ref="crm.view_crm_case_filter"/>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
         <field name="arch" type="xml">
             <xpath expr="//search" position="inside">
                 <separator/>
@@ -259,7 +259,7 @@
                 <filter string="&#9989; Visite effectuée" name="filter_visite_effectuee"
                         domain="[('btp_visit_done','=',True)]"/>
                 <filter string="&#9888;&#65039; Visite dépassée" name="filter_visite_depassee"
-                        domain="[('btp_visit_date','&lt;',context_today().strftime('%Y-%m-%d')),('btp_visit_done','=',False)]"/>
+                        domain="[('btp_visit_date','!=',False),('btp_visit_date','&lt;',(context_today()).strftime('%Y-%m-%d')),('btp_visit_done','=',False)]"/>
                 <separator/>
                 <!-- Filtres par avancée commerciale -->
                 <filter string="&#128203; Devis envoyé" name="filter_devis_envoye"
