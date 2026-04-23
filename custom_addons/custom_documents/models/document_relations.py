@@ -75,8 +75,11 @@ class PurchaseOrderDocuments(models.Model):
 class AccountMoveDocuments(models.Model):
     _inherit = 'account.move'
 
-    ged_document_ids = fields.One2many(
-        'document.document', 'invoice_id',
+    ged_document_ids = fields.Many2many(
+        'document.document',
+        'account_move_ged_doc_rel',
+        'move_id',
+        'doc_id',
         string='Documents GED',
     )
     ged_document_count = fields.Integer(
@@ -86,9 +89,7 @@ class AccountMoveDocuments(models.Model):
 
     def _compute_ged_invoice_count(self):
         for rec in self:
-            rec.ged_document_count = self.env['document.document'].search_count(
-                [('invoice_id', '=', rec.id)]
-            )
+            rec.ged_document_count = len(rec.ged_document_ids)
 
     def action_view_ged_documents(self):
         self.ensure_one()
@@ -97,9 +98,8 @@ class AccountMoveDocuments(models.Model):
             'name': _('Documents — %s') % self.name,
             'res_model': 'document.document',
             'view_mode': 'list,kanban,form',
-            'domain': [('invoice_id', '=', self.id)],
+            'domain': [('id', 'in', self.ged_document_ids.ids)],
             'context': {
-                'default_invoice_id': self.id,
                 'default_name': self.name,
             },
         }
