@@ -192,7 +192,7 @@
                 <field name="btp_visit_done"/>
             </xpath>
             <!-- Afficher les infos BTP et actions rapides dans la carte -->
-            <xpath expr="//t[@t-name='card']" position="inside">
+            <xpath expr="//t[@t-name='kanban-box']" position="inside">
                 <div class="mt-1 pt-1 border-top small text-muted"
                      t-if="record.btp_project_type.raw_value or record.btp_site_city.raw_value or record.btp_visit_date.value">
                     <t t-if="record.btp_project_type.raw_value">
