@@ -19,9 +19,9 @@
         <field name="arch" type="xml">
             <xpath expr="//search" position="inside">
                 <separator/>
-                <filter name="hot_leads" string="Leads chauds"
+                <filter name="hot_leads" string="Pistes chaudes"
                         domain="[('lead_quality', '=', 'hot')]"/>
-                <filter name="warm_leads" string="Leads tièdes"
+                <filter name="warm_leads" string="Pistes tièdes"
                         domain="[('lead_quality', '=', 'warm')]"/>
                 <filter name="no_contact_7days" string="Sans contact 7j+"
                         domain="['|', ('last_contact_date', '=', False), ('last_contact_date', '&lt;=', (context_today() - datetime.timedelta(days=7)).strftime('%%Y-%%m-%%d'))]"/>

@@ -17,13 +17,13 @@ class CrmLead(models.Model):
         ('event', 'Événement'),
         ('advertising', 'Publicité'),
         ('other', 'Autre'),
-    ], string='Source du lead', tracking=True)
+    ], string='Source de la piste', tracking=True)
 
     lead_quality = fields.Selection([
         ('cold', 'Froid'),
         ('warm', 'Tiède'),
         ('hot', 'Chaud'),
-    ], string='Qualité du lead', tracking=True,
+    ], string='Qualité de la piste', tracking=True,
        compute='_compute_lead_quality', store=True, readonly=False)
 
     estimated_closing_date = fields.Date(
@@ -382,7 +382,7 @@ class CrmCompetitor(models.Model):
 
 class CrmLeadBtpLostWizard(models.TransientModel):
     _name = 'crm.lead.btp.lost.wizard'
-    _description = 'Wizard – Motif de perte BTP'
+    _description = 'Assistant – Motif de perte BTP'
 
     lead_id = fields.Many2one('crm.lead', string='Opportunité', required=True, ondelete='cascade')
     btp_loss_reason = fields.Selection([

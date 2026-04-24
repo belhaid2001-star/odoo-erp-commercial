@@ -65,9 +65,9 @@
                        decoration-danger="lead_quality == 'cold'"
                        decoration-warning="lead_quality == 'warm'"
                        decoration-success="lead_quality == 'hot'"
-                       help="Température du lead : froid (peu intéressé), tiède (en réflexion), chaud (prêt à acheter)"/>
+                       help="Température de la piste : froide (peu intéressée), tiède (en réflexion), chaude (prête à acheter)"/>
                 <field name="lead_source"
-                       help="Canal d'acquisition de ce lead (site web, salon, réseau, etc.)"/>
+                       help="Canal d'acquisition de cette piste (site web, salon, réseau, etc.)"/>
                 <field name="estimated_closing_date"
                        help="Date estimée de signature/clôture"/>
                 <field name="conversion_rate"
@@ -168,7 +168,7 @@
                 <field name="btp_project_type" optional="show" string="Type projet"/>
                 <field name="btp_site_city" optional="show" string="Ville chantier"/>
                 <field name="btp_visit_date" optional="show" string="Date visite"/>
-                <field name="btp_visit_done" optional="show" string="Visite OK"/>
+                <field name="btp_visit_done" optional="show" string="Visite réalisée"/>
                 <field name="estimated_closing_date" optional="hide" string="Clôture prévue"/>
                 <field name="call_count" optional="hide" string="Appels"/>
             </xpath>
