@@ -193,7 +193,6 @@ class CrmLead(models.Model):
     )
     btp_visit_constraints = fields.Text(
         string='Contraintes identifiées',
-        placeholder='Accès difficile, réseaux à déplacer, amiante, sol meuble…',
     )
     btp_visit_report = fields.Html(
         string='Compte rendu de visite',
