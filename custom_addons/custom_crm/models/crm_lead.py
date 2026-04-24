@@ -2,6 +2,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from urllib.parse import quote
+from datetime import timedelta
 
 
 class CrmLead(models.Model):
@@ -145,6 +146,69 @@ class CrmLead(models.Model):
         compute='_compute_btp_is_lost_stage',
     )
 
+    # --- Intervenants du projet ---
+    architecte_id = fields.Many2one(
+        'res.partner', string='Architecte',
+        tracking=True,
+    )
+    bureau_etude_id = fields.Many2one(
+        'res.partner', string="Bureau d'étude",
+        tracking=True,
+    )
+    sous_traitant_prospect_ids = fields.Many2many(
+        'res.partner',
+        'crm_lead_sous_traitant_rel', 'lead_id', 'partner_id',
+        string='Sous-traitants potentiels',
+    )
+
+    # --- Analyse financière ---
+    btp_prix_auto = fields.Float(
+        string='Pré-chiffrage automatique (DH)',
+        compute='_compute_btp_prix_auto',
+        store=True,
+        digits=(15, 2),
+        help='Estimation automatique basée sur surface × tarif moyen par type de projet.',
+    )
+    btp_cout_estime = fields.Float(
+        string='Coût de revient estimé (DH)',
+        digits=(15, 2),
+        tracking=True,
+    )
+    btp_marge_pct = fields.Float(
+        string='Marge souhaitée (%)',
+        default=20.0,
+        digits=(5, 2),
+    )
+    btp_marge_montant = fields.Float(
+        string='Marge estimée (DH)',
+        compute='_compute_btp_marge',
+        store=True,
+        digits=(15, 2),
+    )
+
+    # --- Compte rendu de visite ---
+    btp_visit_contact_present = fields.Char(
+        string='Intervenants présents',
+        help='Personnes présentes lors de la visite (client, architecte, ingénieur…)',
+    )
+    btp_visit_constraints = fields.Text(
+        string='Contraintes identifiées',
+        placeholder='Accès difficile, réseaux à déplacer, amiante, sol meuble…',
+    )
+    btp_visit_report = fields.Html(
+        string='Compte rendu de visite',
+    )
+
+    # --- Lien vers chantier BTP ---
+    btp_chantier_id = fields.Many2one(
+        'btp.chantier', string='Chantier BTP lié',
+        readonly=True, copy=False, tracking=True,
+    )
+    btp_chantier_count = fields.Integer(
+        string='Chantiers',
+        compute='_compute_btp_chantier_count',
+    )
+
     # --- Calculs ---
     @api.depends('expected_revenue', 'probability')
     def _compute_conversion_rate(self):
@@ -195,6 +259,30 @@ class CrmLead(models.Model):
                 lead.days_since_last_contact = (today - lead.last_contact_date).days
             else:
                 lead.days_since_last_contact = 0
+
+    @api.depends('btp_surface', 'btp_project_type')
+    def _compute_btp_prix_auto(self):
+        """Pré-chiffrage automatique : surface × tarif moyen/m² par type de projet."""
+        tarifs = {
+            'renovation': 2500,
+            'neuf': 4000,
+            'extension': 3500,
+            'vrd': 1500,
+            'second_oeuvre': 1200,
+            'autre': 2000,
+        }
+        for lead in self:
+            tarif = tarifs.get(lead.btp_project_type, 0)
+            lead.btp_prix_auto = (lead.btp_surface or 0.0) * tarif
+
+    @api.depends('btp_cout_estime', 'btp_marge_pct')
+    def _compute_btp_marge(self):
+        for lead in self:
+            lead.btp_marge_montant = lead.btp_cout_estime * lead.btp_marge_pct / 100.0
+
+    def _compute_btp_chantier_count(self):
+        for lead in self:
+            lead.btp_chantier_count = 1 if lead.btp_chantier_id else 0
 
     # --- Actions ---
     def action_log_call(self):
@@ -366,6 +454,107 @@ class CrmLead(models.Model):
                 'default_btp_loss_reason': self.btp_loss_reason or 'autre',
             },
         }
+
+    def action_create_chantier(self):
+        """Créer un chantier BTP lié à cette opportunité (ou ouvrir l'existant)."""
+        self.ensure_one()
+        if self.btp_chantier_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'btp.chantier',
+                'res_id': self.btp_chantier_id.id,
+                'view_mode': 'form',
+                'target': 'current',
+            }
+        vals = {
+            'name': self.name,
+            'ville': self.btp_site_city or '',
+            'adresse_chantier': self.btp_site_address or '',
+            'montant_contrat': self.btp_client_budget or 0.0,
+            'type_marche': 'prive',
+        }
+        if self.partner_id:
+            vals['maitre_ouvrage_id'] = self.partner_id.id
+        if self.architecte_id:
+            vals['architecte_id'] = self.architecte_id.id
+        chantier = self.env['btp.chantier'].create(vals)
+        self.btp_chantier_id = chantier.id
+        self.message_post(
+            body=_("Chantier BTP créé depuis cette opportunité : <b>%s</b>") % chantier.name,
+            subtype_xmlid='mail.mt_note',
+        )
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'btp.chantier',
+            'res_id': chantier.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def write(self, vals):
+        result = super().write(vals)
+        if 'stage_id' in vals:
+            for rec in self:
+                if rec.type != 'opportunity':
+                    continue
+                seq = rec.stage_id.sequence
+                if seq == 10:
+                    self._schedule_stage_activity(
+                        rec, "📞 Appel de qualification à réaliser", days=1)
+                elif seq == 20:
+                    self._schedule_stage_activity(
+                        rec, "🔍 Étude de faisabilité technique à réaliser", days=3)
+                elif seq == 30:
+                    self._schedule_stage_activity(
+                        rec, "📅 Planifier la visite chantier", days=2)
+                elif seq == 40:
+                    self._schedule_stage_activity(
+                        rec, "📐 Préparer le chiffrage détaillé", days=5)
+                elif seq == 50:
+                    self._schedule_stage_activity(
+                        rec, "📬 Relancer le client : devis en attente de réponse", days=5)
+                elif seq == 60:
+                    self._schedule_stage_activity(
+                        rec, "🤝 Finaliser la négociation", days=3)
+        return result
+
+    def _schedule_stage_activity(self, lead, summary, days=3):
+        activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
+        if not activity_type:
+            return
+        # On n'écrase pas si une activité du même type existe déjà
+        existing = lead.activity_ids.filtered(
+            lambda a: a.activity_type_id == activity_type and a.summary == summary
+        )
+        if existing:
+            return
+        lead.activity_schedule(
+            activity_type_id=activity_type.id,
+            summary=summary,
+            date_deadline=fields.Date.today() + timedelta(days=days),
+        )
+
+    @api.model
+    def _cron_check_stagnant_opportunities(self):
+        """Créer une activité de relance sur les opportunités sans activité depuis 7 jours."""
+        threshold = fields.Date.today() - timedelta(days=7)
+        stagnant = self.search([
+            ('type', '=', 'opportunity'),
+            ('active', '=', True),
+            ('stage_id.is_won', '=', False),
+            ('stage_id.fold', '=', False),
+            ('activity_ids', '=', False),
+            ('write_date', '<', str(threshold)),
+        ])
+        activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
+        if not activity_type:
+            return
+        for lead in stagnant:
+            lead.activity_schedule(
+                activity_type_id=activity_type.id,
+                summary="⚠️ Opportunité inactive depuis 7+ jours — relancer le client",
+                date_deadline=fields.Date.today(),
+            )
 
 
 class CrmCompetitor(models.Model):

@@ -5,31 +5,35 @@
     <!-- ================================================================ -->
     <data noupdate="0">
         <record id="stage_qualification" model="crm.stage">
-            <field name="name">Nouvelle demande</field>
+            <field name="name">Nouveau contact</field>
             <field name="sequence">10</field>
             <field name="is_won" eval="False"/>
             <field name="fold" eval="False"/>
+            <field name="requirements">Type de projet, budget, localisation</field>
         </record>
 
         <record id="stage_qualifie" model="crm.stage">
-            <field name="name">Qualifié</field>
+            <field name="name">Étude de faisabilité</field>
             <field name="sequence">20</field>
             <field name="is_won" eval="False"/>
             <field name="fold" eval="False"/>
+            <field name="requirements">Analyse technique et faisabilité validées</field>
         </record>
 
         <record id="stage_visite_programmee" model="crm.stage">
-            <field name="name">Visite programmée</field>
+            <field name="name">Visite chantier</field>
             <field name="sequence">30</field>
             <field name="is_won" eval="False"/>
             <field name="fold" eval="False"/>
+            <field name="requirements">Visite planifiée, compte rendu rédigé</field>
         </record>
 
         <record id="stage_visite_effectuee" model="crm.stage">
-            <field name="name">Visite effectuée</field>
+            <field name="name">Chiffrage en cours</field>
             <field name="sequence">40</field>
             <field name="is_won" eval="False"/>
             <field name="fold" eval="False"/>
+            <field name="requirements">Métrés et lots définis, devis en préparation</field>
         </record>
 
         <record id="stage_devis_envoye" model="crm.stage">
@@ -82,6 +86,19 @@
     </data>
 
     <data noupdate="1">
+        <!-- Cron : vérification opportunités stagnantes (sans activité depuis 7j) -->
+        <record id="ir_cron_crm_stagnant" model="ir.cron">
+            <field name="name">CRM – Alertes opportunités stagnantes</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_check_stagnant_opportunities()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
         <!-- ============================================================ -->
         <!-- Type d'activité : WhatsApp                                    -->
         <!-- ============================================================ -->

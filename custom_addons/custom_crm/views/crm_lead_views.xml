@@ -35,6 +35,11 @@
                         string="&#128203; Devis rapide"
                         type="object" class="btn-primary"
                         invisible="type != 'opportunity'"/>
+                <button name="action_create_chantier"
+                        string="&#127959;&#65039; Créer chantier"
+                        type="object" class="btn-success"
+                        invisible="type != 'opportunity' or stage_id.is_won != True"
+                        help="Créer le chantier BTP correspondant à cette opportunité gagnée"/>
                 <button name="action_open_btp_lost_wizard"
                         string="&#10060; Perdu"
                         type="object" class="btn-danger"
@@ -56,6 +61,14 @@
                         icon="fa-file-text-o">
                     <field name="quote_count" widget="statinfo"
                            string="Devis"/>
+                </button>
+                <button name="action_create_chantier"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-building"
+                        invisible="btp_chantier_count == 0">
+                    <field name="btp_chantier_count" widget="statinfo"
+                           string="Chantier BTP"/>
                 </button>
             </xpath>
 
@@ -115,6 +128,8 @@
             <xpath expr="//notebook/page[@name='commercial_tracking']" position="before">
                 <page string="&#127959;&#65039; Fiche BTP" name="btp_details">
                     <field name="btp_is_lost_stage" invisible="1"/>
+
+                    <!-- Projet + Localisation -->
                     <group>
                         <group string="&#127959;&#65039; Projet">
                             <field name="btp_project_type"
@@ -135,18 +150,68 @@
                                    help="Adresse du chantier – peut différer de l'adresse du client"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="&#128197; Visite sur site">
-                            <field name="btp_visit_date"
-                                   help="Date de la visite sur site programmée ou réalisée"/>
-                            <field name="btp_visit_done"
-                                   help="Cochez après la visite – rempli automatiquement si la date est passée"/>
+
+                    <!-- Intervenants -->
+                    <group string="&#128101; Intervenants du projet">
+                        <group>
+                            <field name="architecte_id"
+                                   placeholder="Rechercher un architecte..."
+                                   help="Architecte associé à ce projet"/>
+                            <field name="bureau_etude_id"
+                                   placeholder="Rechercher un bureau d'étude..."
+                                   help="Bureau d'étude ou bureau de contrôle"/>
                         </group>
-                        <group string="&#10060; Perte">
+                        <group>
+                            <field name="sous_traitant_prospect_ids"
+                                   widget="many2many_tags"
+                                   placeholder="Ajouter des sous-traitants potentiels..."
+                                   help="Sous-traitants envisagés pour ce chantier"/>
+                        </group>
+                    </group>
+
+                    <!-- Analyse financière -->
+                    <group string="&#128200; Analyse financière">
+                        <group string="Estimations">
+                            <field name="btp_prix_auto"
+                                   readonly="1"
+                                   help="Estimation automatique basée sur surface × tarif moyen par type de projet"/>
+                            <field name="btp_cout_estime"
+                                   help="Coût de revient estimé après étude (main d'œuvre + matériaux)"/>
+                            <field name="btp_marge_pct"
+                                   help="Taux de marge commerciale souhaité"/>
+                            <field name="btp_marge_montant"
+                                   readonly="1"
+                                   help="Marge en valeur absolue (coût × taux de marge)"/>
+                        </group>
+                        <group string="Perte / Clôture">
                             <field name="btp_loss_reason"
                                    invisible="not btp_is_lost_stage"
                                    help="Motif principal de la perte de ce chantier"/>
+                            <field name="btp_chantier_id" readonly="1"/>
                         </group>
+                    </group>
+
+                    <!-- Visite chantier -->
+                    <group string="&#128197; Visite sur site">
+                        <group>
+                            <field name="btp_visit_date"
+                                   help="Date de la visite sur site programmée ou réalisée"/>
+                            <field name="btp_visit_done"
+                                   help="Coché automatiquement si la date de visite est passée"/>
+                            <field name="btp_visit_contact_present"
+                                   placeholder="Ex : client, architecte, ingénieur structure…"
+                                   help="Personnes présentes lors de la visite"/>
+                        </group>
+                        <group>
+                            <field name="btp_visit_constraints"
+                                   widget="text"
+                                   placeholder="Accès difficile, réseaux à déplacer, présence amiante…"
+                                   help="Contraintes techniques ou logistiques identifiées"/>
+                        </group>
+                    </group>
+                    <group string="&#128203; Compte rendu de visite"
+                           invisible="not btp_visit_done">
+                        <field name="btp_visit_report" nolabel="1" colspan="2"/>
                     </group>
                 </page>
             </xpath>
@@ -167,8 +232,12 @@
                 <field name="lead_source" optional="show" string="Source"/>
                 <field name="btp_project_type" optional="show" string="Type projet"/>
                 <field name="btp_site_city" optional="show" string="Ville chantier"/>
+                <field name="btp_surface" optional="hide" string="Surface (m²)"/>
+                <field name="btp_client_budget" optional="hide" string="Budget client (DH)"/>
+                <field name="btp_prix_auto" optional="hide" string="Pré-chiffrage (DH)"/>
                 <field name="btp_visit_date" optional="show" string="Date visite"/>
                 <field name="btp_visit_done" optional="show" string="Visite réalisée"/>
+                <field name="architecte_id" optional="hide" string="Architecte"/>
                 <field name="estimated_closing_date" optional="hide" string="Clôture prévue"/>
                 <field name="call_count" optional="hide" string="Appels"/>
             </xpath>
@@ -262,8 +331,10 @@
                 <!-- Filtres par avancée commerciale -->
                 <filter string="&#128203; Devis envoyé" name="filter_devis_envoye"
                         domain="[('stage_id.name','=','Devis envoyé')]"/>
-                <filter string="&#128293; Chaud (≥ 50 %)" name="filter_chaud"
+                <filter string="&#128293; Piste chaude (&#8805; 50 %)" name="filter_chaud"
                         domain="[('probability','&gt;=',50)]"/>
+                <filter string="&#127959;&#65039; Chantier BTP créé" name="filter_chantier_cree"
+                        domain="[('btp_chantier_id','!=',False)]"/>
                 <!-- Regroupements BTP -->
                 <group expand="0" string="Regrouper par BTP">
                     <filter string="Type de projet" name="groupby_project_type"
@@ -272,6 +343,8 @@
                             context="{'group_by': 'btp_site_city'}"/>
                     <filter string="Qualité / Température" name="groupby_quality"
                             context="{'group_by': 'lead_quality'}"/>
+                    <filter string="Architecte" name="groupby_architecte"
+                            context="{'group_by': 'architecte_id'}"/>
                     <filter string="Commercial" name="groupby_user"
                             context="{'group_by': 'user_id'}"/>
                 </group>
